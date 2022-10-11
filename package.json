@@ -1,0 +1,15 @@
+{
+  "name": "zkdid-js",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "repository": "https://github.com/FindoraNetwork/zkdid-js.git",
+  "author": "Findora Network",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "@ethersproject/keccak256": "^5.7.0",
+    "@spruceid/didkit": "^0.3.0-beta.3",
+    "js-base64": "^3.7.2",
+    "typescript": "^4.8.4"
+  }
+}

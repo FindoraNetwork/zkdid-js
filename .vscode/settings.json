@@ -1,0 +1,46 @@
+{
+  "eslint.format.enable": true,
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  },
+  "eslint.codeAction.showDocumentation": {
+    "enable": true
+  },
+  "eslint.codeAction.disableRuleComment": {
+    "enable": true
+  },
+  "eslint.probe": ["javascript", "javascriptreact"],
+
+  "search.exclude": {
+    "**/node_modules": true,
+    "dist": true,
+    "yarn.lock": true,
+    "package-lock": true
+  },
+
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/*/**": true,
+    "**/dist/**": true
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[yaml]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}
