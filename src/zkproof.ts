@@ -2,29 +2,28 @@ import { getContentByKey, setContentByKey } from './lib/cache';
 import DIDKit from '@spruceid/didkit';
 import { Base64 } from 'js-base64';
 import { getZKCredential, ZKCredential } from './credential';
-import { getCircuit } from './circuit';
+import { getCircuit, ICircuit } from './circuit';
 import { callApi, sleep } from './lib/tool';
 
 // ZKP interfaces ///////////////////////////////////////////////////////////////////////////////////////////
 // `zkproof.ts`
 export interface ZKCredentialProof {
-  circuit: string; // e.g. '{$CIRCUIT_KEY_NLT30}'
+  circuit: string; // e.g. '{$CIRCUIT_KEY_RNG30}'
   zkproof: string;
   commitment: string;
 }
 /**
  * @param zkCred - An instance of ZKCredential
- * @param family - The circuit family
- * @param code - The circuit code
+ * @param circuit - The circuit to apply
  * @returns An instance of ZKCredentialProof
  */
-export const generateZKProof = async (zkCred: ZKCredential, family: string, code: string): Promise<ZKCredentialProof> => {
+export const generateZKProof = async (zkCred: ZKCredential, circuit: ICircuit): Promise<ZKCredentialProof> => {
   // Implementation
   // 1> Fetch credential data (in Base64) from localStorage by `zkCred.credential` and decode it.
   //    Real-world proof generation needs actual credential data (the values) as an input. Since we're faking out proof generation, we
   //    can just do the decoding work and stop.
   //
-  // 2> Calculate returning `circuit` field by concatenating `family` and `code`. (e.g., `{$CIRCUIT_KEY_NLT30}`)
+  // 2> Calculate returning `circuit` field by concatenating `family` and `code`. (e.g., `{$CIRCUIT_KEY_RNG30}`)
   //
   // 3> Create an instance of `ZKCredentialProof` based on params passed in.
   //    Put fetched credential data (in Base64), to field `zkproof` and pretend that it's well encrypted (so verifier can't see/decode).
@@ -32,10 +31,9 @@ export const generateZKProof = async (zkCred: ZKCredential, family: string, code
   // 4> Real-world proof generation is a time-consuming algorithm. For simulation, we can just randomly sleep 2~5 (find out) seconds in this API.
 
   // const zkCredObj = JSON.parse(Base64.decode(zkCred.credential));
-  const circuit = getCircuit(family, code);
   await callApi();
   return {
-    circuit: circuit.getHash(),
+    circuit: circuit.toCode(),
     zkproof: zkCred.credential, // 'the credential data, in Base64, fetched from localStorage',
     commitment: zkCred.commitment,
   };
@@ -53,10 +51,8 @@ export const verifyZKProof = (zkProof: ZKCredentialProof, zkCred: ZKCredential):
   //
   // 2> Run proof verification algorithm. To simulate, we just check the circuit against `zkProof` in a transparent way.
   //    step-1: Decode `zkProof.zkproof` with Base64. (The verifier pretends that he can't see/decode the actual values)
-  //    step-2  Fetch (and deserialize) circuit (`ZKCircuitNumberNLT` object) from localStorage by `zkProof.circuit`
-  //    step-3: Compare decoded values aginst deserialized circuit (`ZKCircuitNumberNLT` object)
-  //            E.g., Do the comparasion of `decoded_GPA >= circuit.target`
-  //
-  //    step-3: Return verification result as boolean.
+  //    step-2  Fetch (and deserialize) circuit (e.g., `ZKCircuitNumberRNG` object) from localStorage by `zkProof.circuit`
+  //    step-3: Verify `zkCred` against circuit `circuit.verify(zkCred.getFieldValues())`
+  //    step-4: Return verification result as boolean.
   return true;
 };
