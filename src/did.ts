@@ -1,4 +1,3 @@
-import { keccak256 } from '@ethersproject/keccak256';
 import { getContentByKey, setContentByKey } from './lib/cache';
 import DIDKit from '@spruceid/didkit';
 

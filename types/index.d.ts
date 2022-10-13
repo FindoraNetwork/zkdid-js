@@ -6,7 +6,7 @@ interface DID {
 
 enum CacheType {
   DID = 'did',
-  CIRCUIT = 'circuit',
+  // CIRCUIT = 'circuit',
   CIRCUIT_FAMILY = 'circuit-family',
   ZKCredential = 'zkCred',
 }
