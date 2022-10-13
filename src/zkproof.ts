@@ -1,26 +1,24 @@
-import { keccak256 } from '@ethersproject/keccak256';
 import { getContentByKey, setContentByKey } from './lib/cache';
 import DIDKit from '@spruceid/didkit';
 import { Base64 } from 'js-base64';
 import { getZKCredential, ZKCredential } from './credential';
-const HashLen = 40;
+import { getCircuit } from './circuit';
+import { callApi, sleep } from './lib/tool';
 
 // ZKP interfaces ///////////////////////////////////////////////////////////////////////////////////////////
 // `zkproof.ts`
-
 export interface ZKCredentialProof {
   circuit: string; // e.g. '{$CIRCUIT_KEY_NLT30}'
   zkproof: string;
   commitment: string;
 }
-
 /**
  * @param zkCred - An instance of ZKCredential
  * @param family - The circuit family
  * @param code - The circuit code
  * @returns An instance of ZKCredentialProof
  */
-export const generateZKProof = (zkCred: ZKCredential, family: string, code: string): ZKCredentialProof => {
+export const generateZKProof = async (zkCred: ZKCredential, family: string, code: string): Promise<ZKCredentialProof> => {
   // Implementation
   // 1> Fetch credential data (in Base64) from localStorage by `zkCred.credential` and decode it.
   //    Real-world proof generation needs actual credential data (the values) as an input. Since we're faking out proof generation, we
@@ -33,14 +31,15 @@ export const generateZKProof = (zkCred: ZKCredential, family: string, code: stri
   //
   // 4> Real-world proof generation is a time-consuming algorithm. For simulation, we can just randomly sleep 2~5 (find out) seconds in this API.
 
-  const cred = JSON.parse(Base64.decode(zkCred.credential));
+  // const zkCredObj = JSON.parse(Base64.decode(zkCred.credential));
+  const circuit = getCircuit(family, code);
+  await callApi();
   return {
-    circuit: '{$CIRCUIT_KEY_NLT30}',
-    zkproof: 'the credential data, in Base64, fetched from localStorage',
+    circuit: circuit.getHash(),
+    zkproof: zkCred.credential, // 'the credential data, in Base64, fetched from localStorage',
     commitment: zkCred.commitment,
   };
 };
-
 /**
  * @param zkProof - An instance of ZKCredentialProof
  * @param zkCred - An instance of ZKCredential

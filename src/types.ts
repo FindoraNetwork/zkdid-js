@@ -1,16 +1,16 @@
-type address = string;
+export type address = string;
 
-interface DID {
+export interface DID {
   id: string;
 }
 
-enum CacheType {
+export enum CacheType {
   DID = 'did',
   // CIRCUIT = 'circuit',
   CIRCUIT_FAMILY = 'circuit-family',
   ZKCredential = 'zkCred',
 }
 
-interface CircuitObj {
+export interface CircuitObj {
   target: number;
 }

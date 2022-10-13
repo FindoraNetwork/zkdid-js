@@ -1,12 +1,13 @@
-import { keccak256 } from '@ethersproject/keccak256';
 import { getContentByKey, setContentByKey } from './lib/cache';
 import Constants from './lib/constants';
+import { stringKeccak256 } from './lib/tool';
+import { CacheType } from './types';
 
 // ZK circuit interfaces ////////////////////////////////////////////////////////////////////////////////////
 // `circuit.ts`
 
 // An extendable family of circuits
-// const CIRCUIT_FAMILY = keccak256('ZKCircuitFamily').slice(-Constants.HashLen);
+// const CIRCUIT_FAMILY = stringKeccak256('ZKCircuitFamily').slice(-Constants.HashLen);
 
 // Some predefined ZK circuit for single number comparasion (no less than)
 export interface ICircuit {
@@ -21,7 +22,7 @@ export class ZKCircuitNumberNLT implements ICircuit {
     this.target = target;
   }
   getHash(): string {
-    return keccak256(JSON.stringify(this));
+    return stringKeccak256(JSON.stringify(this));
   }
   getTarget(): number {
     return this.target;
@@ -32,7 +33,7 @@ export class ZKCircuitNumberNLT implements ICircuit {
 // 1> Save below 7 predefined circuits into localStorage on initialization
 // 3> Serialize and save each circuit under their own key (e.g., `{$CIRCUIT_KEY_NLT30}`)
 //    Real-world circuits will be probably built and published on blockchain.
-[3.0, 3.5, 650, 700, 65000, 80000, 95000].forEach((target) => {
+Constants.CIRCUIT_DEFINED.forEach((target) => {
   const circuit = new ZKCircuitNumberNLT(target);
   const key = [Constants.CIRCUIT_FAMILY, circuit.getHash()].join(':');
   setContentByKey(CacheType.CIRCUIT_FAMILY, key, circuit);
@@ -76,7 +77,7 @@ export const getCircuit = (family: string, code: string): ZKCircuitNumberNLT => 
 /**
  * @remark This method creates a new circuit
  * @param family - The circuit family
- * @param code - The circuit code
+ * @param circuit - The ICircuit
  * @returns An instance of new circuit
  * @throws Error if circuit already exists
  */
@@ -89,6 +90,9 @@ export const createCircuit = (family: string, circuit: ICircuit): ZKCircuitNumbe
   const zkCircuit = new ZKCircuitNumberNLT(circuit.target);
 
   const key = [family, zkCircuit.getHash()].join(':');
+  const check = getContentByKey(CacheType.CIRCUIT_FAMILY, key);
+  if (check) throw Error('Circuit already exists');
+
   setContentByKey(CacheType.CIRCUIT_FAMILY, key, zkCircuit);
   return zkCircuit;
 };

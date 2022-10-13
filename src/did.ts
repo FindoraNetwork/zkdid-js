@@ -1,12 +1,9 @@
 import { getContentByKey, setContentByKey } from './lib/cache';
 import DIDKit from '@spruceid/didkit';
+import { address, CacheType, DID } from './types';
 
 // DID interfaces ///////////////////////////////////////////////////////////////////////////////////////////
 // `did.ts`
-
-export interface DID {
-  id: string;
-}
 
 /**
  * @param address - Metamask address
@@ -53,6 +50,7 @@ export const createDID = (address: string): DID => {
   // 3> Assign/link newly created DID to `address`
 
   const key = DIDKit.generateEd25519Key();
-  const id = DIDKit.keyToDID('key', key);
-  return { id };
+  const did = { id: DIDKit.keyToDID('key', key) };
+  setContentByKey(CacheType.DID, address, did);
+  return did;
 };

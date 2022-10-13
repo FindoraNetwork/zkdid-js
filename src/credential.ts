@@ -1,7 +1,8 @@
-import { keccak256 } from '@ethersproject/keccak256';
 import { getContentByKey, setContentByKey } from './lib/cache';
 import { Base64 } from 'js-base64';
 import Constants from './lib/constants';
+import { CacheType, DID } from './types';
+import { stringKeccak256 } from './lib/tool';
 // Credential interfaces ////////////////////////////////////////////////////////////////////////////////////
 // `credential.ts`
 
@@ -25,7 +26,7 @@ export class GPACredential implements ICredential {
     return this.did;
   }
   getTypeCode(): string {
-    return keccak256('credential.findora.org.GPA').slice(-Constants.HashLen);
+    return stringKeccak256('credential.findora.org.GPA').slice(-Constants.HashLen);
   }
   getEncrypted(): string {
     // Implementation
@@ -58,7 +59,7 @@ export class CreditScoreCredential implements ICredential {
     return this.did;
   }
   getTypeCode(): string {
-    return keccak256('credential.findora.org.CreditScore').slice(-Constants.HashLen);
+    return stringKeccak256('credential.findora.org.CreditScore').slice(-Constants.HashLen);
   }
   getEncrypted(): string {
     // Implementation
@@ -91,7 +92,7 @@ export class AnnualIncomeCredential implements ICredential {
     return this.did;
   }
   getTypeCode(): string {
-    return keccak256('credential.findora.org.AnnualIncome').slice(-Constants.HashLen);
+    return stringKeccak256('credential.findora.org.AnnualIncome').slice(-Constants.HashLen);
   }
   getEncrypted(): string {
     // Implementation
@@ -126,7 +127,7 @@ export interface ZKCredential {
 export const hasZKCredential = (did: DID, typeCode: string): boolean => {
   // Implementation
   // 1> Check existence of ZKCredential in localStorage by key [did + typeCode] (e.g., 'did:key:z6MksFwai2iBGRQdai5KSFP9FsPvZPnYY2FshK2mJ7nrYwZx:7fed71c88753dc82cd80d84e6f28c588d4c15b88').
-  const key = `${did.id}${typeCode}`;
+  const key = `${did.id}:${typeCode}`;
   const zkCred = getContentByKey(CacheType.ZKCredential, key);
   if (!zkCred) return false;
   return true;
@@ -143,17 +144,15 @@ export const getZKCredential = (did: DID, typeCode: string): ZKCredential => {
 
   // Implementation
   // 1> Get ZKCredential from localStorage by key (same key as above)
-  const key = `${did.id}${typeCode}`;
+  const key = `${did.id}:${typeCode}`;
   const credential = getContentByKey(CacheType.ZKCredential, key);
   if (!credential) throw Error("ZKCredential doesn't exist");
   const zkCredStr = Base64.decode(credential);
   const zkCredObj = JSON.parse(zkCredStr);
-  setContentByKey(CacheType.ZKCredential, key, credential);
-  const commitment = keccak256(credential).slice(-Constants.HashLen);
   return {
     circuitFamily: zkCredObj.getCircuitFamily,
-    credential: credential,
-    commitment: commitment,
+    credential,
+    commitment: stringKeccak256(credential),
   };
 };
 
@@ -178,12 +177,11 @@ export const createZKCredential = (did: DID, cred: ICredential): ZKCredential =>
   //    Real-world commitment is usually published/stored, by ZKCredential issuer, in a smart contract on blockchain.
 
   const credential = cred.getEncrypted();
-  const key = `${did.id}${cred.getTypeCode()}`;
+  const key = `${did.id}:${cred.getTypeCode()}`;
   setContentByKey(CacheType.ZKCredential, key, credential);
-  const commitment = keccak256(credential).slice(-Constants.HashLen);
   return {
     circuitFamily: cred.getCircuitFamily(),
     credential: credential,
-    commitment: commitment,
+    commitment: stringKeccak256(credential),
   };
 };
