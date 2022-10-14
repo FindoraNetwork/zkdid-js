@@ -11,6 +11,7 @@ export interface ICredential {
   getTypeCode(): string;
   getEncrypted(): string;
   getCircuitFamily(): string;
+  getFieldValues(): Map<string, number | string>;
 }
 
 // Credential of GPA score
@@ -43,6 +44,9 @@ export class GPACredential implements ICredential {
   }
   getCircuitFamily(): string {
     return Constants.CIRCUIT_FAMILY;
+  }
+  getFieldValues(): Map<string, number | string> {
+    return new Map([['GPAScore', this.GPAScore]]);
   }
 }
 
@@ -77,6 +81,9 @@ export class CreditScoreCredential implements ICredential {
   getCircuitFamily(): string {
     return Constants.CIRCUIT_FAMILY;
   }
+  getFieldValues(): Map<string, number | string> {
+    return new Map([['creditScore', this.creditScore]]);
+  }
 }
 
 // Credential of annual income (USD)
@@ -109,6 +116,9 @@ export class AnnualIncomeCredential implements ICredential {
   }
   getCircuitFamily(): string {
     return Constants.CIRCUIT_FAMILY;
+  }
+  getFieldValues(): Map<string, number | string> {
+    return new Map([['annualIncomeUsd', this.annualIncomeUsd]]);
   }
 }
 
