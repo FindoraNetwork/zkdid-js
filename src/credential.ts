@@ -124,6 +124,7 @@ export class AnnualIncomeCredential implements ICredential {
 
 // General ZK credential
 export interface ZKCredential {
+  did: DID;
   circuitFamily: string;
   credential: string;
   commitment: string;
@@ -160,6 +161,7 @@ export const getZKCredential = (did: DID, typeCode: string): ZKCredential => {
   const zkCredStr = Base64.decode(credential);
   const zkCredObj = JSON.parse(zkCredStr);
   return {
+    did,
     circuitFamily: zkCredObj.getCircuitFamily,
     credential,
     commitment: stringKeccak256(credential),
@@ -190,6 +192,7 @@ export const createZKCredential = (did: DID, cred: ICredential): ZKCredential =>
   const key = `${did.id}:${cred.getTypeCode()}`;
   setContentByKey(CacheType.ZKCredential, key, credential);
   return {
+    did,
     circuitFamily: cred.getCircuitFamily(),
     credential: credential,
     commitment: stringKeccak256(credential),

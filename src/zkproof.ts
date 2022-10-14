@@ -1,6 +1,7 @@
 import { getContentByKey, setContentByKey } from './lib/cache';
 import DIDKit from '@spruceid/didkit';
 import { Base64 } from 'js-base64';
+import { DID } from './types';
 import { getZKCredential, ZKCredential } from './credential';
 import { getCircuit, ICircuit } from './circuit';
 import { callApi, sleep } from './lib/tool';
@@ -38,18 +39,23 @@ export const generateZKProof = async (zkCred: ZKCredential, circuit: ICircuit): 
     commitment: zkCred.commitment,
   };
 };
+
 /**
+ * @param address - owner address of `zkCred`
  * @param zkProof - An instance of ZKCredentialProof
  * @param zkCred - An instance of ZKCredential
  * @returns Result of proof verification
  */
-export const verifyZKProof = (zkProof: ZKCredentialProof, zkCred: ZKCredential): boolean => {
+export const verifyZKProof = (address: string, zkCred: ZKCredential, zkProof: ZKCredentialProof): boolean => {
   // Implementation
-  // 1> Verifier compares the fields (`circuit` and `commitment`) in `zkProof` and `zkCred` to make sure they match.
+  // 1> Verify ownership of `zkCred`
+  //
+  //
+  // 2> Verifier compares the fields (`circuit` and `commitment`) in `zkProof` and `zkCred` to make sure they match.
   //    Throw Error("proof not matching the zkCred.circuitFamily") if detected.
   //    Throw Error("proof not matching the zkCred.commitment") if detected.
   //
-  // 2> Run proof verification algorithm. To simulate, we just check the circuit against `zkProof` in a transparent way.
+  // 3> Run proof verification algorithm. To simulate, we just check the circuit against `zkProof` in a transparent way.
   //    step-1: Decode `zkProof.zkproof` with Base64. (The verifier pretends that he can't see/decode the actual values)
   //    step-2  Fetch (and deserialize) circuit (e.g., `ZKCircuitNumberRNG` object) from localStorage by `zkProof.circuit`
   //    step-3: Verify `zkCred` against circuit `circuit.verify(zkCred.getFieldValues())`

@@ -1,12 +1,12 @@
 // ZK constraints
 
 // Contraint interface
-export interface IConstrait {
+export interface IConstraint {
   getField(): string;
   verify(value: string): boolean;
 }
 
-export class ConstraintINT_RNG implements IConstrait {
+export class ConstraintINT_RNG implements IConstraint {
   field: string;
   lower: number;
   upper: number;
@@ -25,7 +25,7 @@ export class ConstraintINT_RNG implements IConstrait {
 }
 
 // Range contraint for string field
-export class ConstraintSTR_RNG implements IConstrait {
+export class ConstraintSTR_RNG implements IConstraint {
   field: string;
   range: string[];
   constructor(field: string, range: string[]) {
