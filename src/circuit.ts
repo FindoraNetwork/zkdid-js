@@ -1,6 +1,6 @@
 import { getContentByKey, setContentByKey } from './lib/cache';
 import { ZKCredential } from './credential';
-import { IConstrait, ConstraintINT_RNG, ConstraintSTR_RNG } from './constraints';
+import { IConstraint, ConstraintINT_RNG, ConstraintSTR_RNG } from './constraints';
 import Constants from './lib/constants';
 import { stringKeccak256 } from './lib/tool';
 import { CacheType } from './types';
@@ -21,11 +21,11 @@ export interface ICircuit {
 
 // Some predefined ZK circuit for single number comparasion (range)
 export class ZKCircuitNumberRNG implements ICircuit {
-  constraints: Array<IConstrait> = [];
-  constructor(constraints: Array<IConstrait> = []) {
+  constraints: Array<IConstraint> = [];
+  constructor(constraints: Array<IConstraint> = []) {
     this.constraints = constraints;
   }
-  addConstrait(constrait: IConstrait) {
+  addConstrait(constrait: IConstraint) {
     this.constraints.push(constrait);
   }
   toCode(): string {
