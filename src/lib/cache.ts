@@ -82,7 +82,7 @@ const storage = globalThis === window ? localStorage : new MemoryStorage();
 interface CacheDataType {
   [CacheType.DID]: DID;
   // [eCacheType.CIRCUIT]: CircuitObj;
-  [CacheType.CIRCUIT_FAMILY]: string;
+  [CacheType.CIRCUIT]: string;
   [CacheType.ZKCredential]: string;
 }
 

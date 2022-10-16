@@ -1,126 +1,110 @@
 import { getContentByKey, setContentByKey } from './lib/cache';
-import { ZKCredential } from './credential';
-import { IConstraint, ConstraintINT_RNG, ConstraintSTR_RNG } from './constraints';
+import { IConstraint, CONSTRAINTS_GPA, CONSTRAINTS_CREDITS, CONSTRAINTS_INCOME } from './constraints';
 import Constants from './lib/constants';
 import { stringKeccak256 } from './lib/tool';
 import { CacheType } from './types';
+import { AnnualIncomeCredential, CreditScoreCredential, GPACredential } from './credential';
 
-// ZK circuit interfaces ////////////////////////////////////////////////////////////////////////////////////
-// `circuit.ts`
-
-// An extendable family of circuits
-// const CIRCUIT_FAMILY = stringKeccak256('ZKCircuitFamily').slice(-Constants.HashLen);
-
-// Some predefined ZK circuit for single number comparasion (range)
-export interface ICircuit {
-  toCode(): string;
-  toBytes(): string;
-  fromBytes(bytes: string): ICircuit;
-  verify(fields: Map<string, number | string>): boolean;
-}
-
-// Some predefined ZK circuit for single number comparasion (range)
-export class ZKCircuitNumberRNG implements ICircuit {
-  constraints: Array<IConstraint> = [];
+// ZK circuit interface
+export class ZKCircuit {
+  private constraints: Array<IConstraint> = [];
   constructor(constraints: Array<IConstraint> = []) {
     this.constraints = constraints;
   }
-  addConstrait(constrait: IConstraint) {
-    this.constraints.push(constrait);
+  addConstraint(constraint: IConstraint) {
+    this.constraints.push(constraint);
   }
   toCode(): string {
-    return stringKeccak256(JSON.stringify(this));
+    return stringKeccak256(this.toBytes());
   }
   toBytes(): string {
-    throw new Error('Method not implemented.');
+    return JSON.stringify(this);
   }
-  fromBytes(bytes: string): ZKCircuitNumberRNG {
-    throw new Error('Method not implemented.');
+  static fromBytes(bytes: string): ZKCircuit {
+    return Object.assign(new this(), JSON.parse(bytes));
   }
   verify(fields: Map<string, number | string>): boolean {
-    // verify zkCred against each contrait in `constraints` array
+    // verify `fields` against every contrait
 
     // Implementation:
-    // step-1: Decode `zkCred.zkproof` with Base64. (The verifier pretends that he can't see/decode the actual values)
-    // step-2: Compare decoded values aginst deserialized circuit (e.g., `ZKCircuitNumberRNG` object)
-    //         Return `true` only if all constraints in the circuit MUST pass.
-    //         Return `false` if any of the constraints fails.
-    //         Throw error when field name not matching the circuit.
     //
     /* Example:
-    // decode ZKCredential
-    // get field value from `ZKCredential`
-    for(let i=0; i < this.constraints.length; i++) {
-      value = fields.get(this.constraints[i].getField());
-      this.constraints[i].verify(value)
+    for (let i = 0; i < this.constraints.length; i++) {
+      const value = fields.get(this.constraints[i].getField());
+      if (!this.constraints[i].verify(value)) return false;
     }
     */
     return true;
   }
 }
 
-// APIs to extend predefined circuit family
+const circuitPath = (purpose: string, code: string): string => {
+  return [purpose, code].join(':');
+};
+
+// APIs to extend circuit family
 
 /**
- * @param family - The circuit family
+ * @param purpose - The purpose code
  * @param code - The circuit code
  * @returns `true` if the circuit exists or `false` otherwise
  */
-export const hasCircuit = (family: string, code: string): boolean => {
-  // Implementation
-  // 1> Check existence of circuit in localStorage by key (e.g., `{$CIRCUIT_KEY_RNG30}`)
-
-  const key = [family, code].join(':');
-  const circuit = getContentByKey(CacheType.CIRCUIT_FAMILY, key);
+export const hasCircuit = (purpose: string, code: string): boolean => {
+  const path = circuitPath(purpose, code);
+  const circuit = getContentByKey(CacheType.CIRCUIT, path);
   if (!circuit) return false;
   return true;
 };
 
 /**
- * @param family - The circuit family
+ * @param purpose - The purpose code
  * @param code - The circuit code
  * @returns The circuit instance
  * @throws Error if circuit doesn't exist
  */
-export const getCircuit = <TCircuit extends ICircuit>(family: string, code: string): ICircuit => {
-  // if (!hasCircuit(family, code)) throw Error("Circuit doesn't exist");
-
-  // Implementation
-  // 1> Get circuit from localStorage by key (e.g., `{$CIRCUIT_KEY_RNG30}`)
-
-  const key = [family, code].join(':');
-  const bytes = getContentByKey(CacheType.CIRCUIT_FAMILY, key);
+export const getCircuit = (purpose: string, code: string): ZKCircuit => {
+  const path = circuitPath(purpose, code);
+  const bytes = getContentByKey(CacheType.CIRCUIT, path);
   if (!bytes) throw Error("Circuit doesn't exist");
-  const circuit: TCircuit = {} as TCircuit;
-  return circuit.fromBytes(bytes);
+  return ZKCircuit.fromBytes(bytes);
 };
 
 /**
- * @remark This method creates a new circuit
- * @param family - The circuit family
- * @param circuit - The ICircuit
- * @returns An instance of new circuit
+ * @remark This method creates a new circuit under `family`
+ * @param purpose - The purpose code
+ * @param circuit - The circuit instance
  * @throws Error if circuit already exists
  */
-export const createCircuit = (family: string, circuit: ICircuit): void => {
-  // calculate the code [family+circuit_hash]
-  // let code = '';
-  // if (hasCircuit(family, code)) throw Error('Circuit already exists');
-  // Implementation
-  // 1> Create and save circuit in localStorage by key (e.g., `{$CIRCUIT_KEY_RNG30}`)
-
-  const key = [family, circuit.toCode()].join(':');
-  const bytes = getContentByKey(CacheType.CIRCUIT_FAMILY, key);
+export const createCircuit = (purpose: string, circuit: ZKCircuit): void => {
+  const key = circuitPath(purpose, circuit.toCode());
+  const bytes = getContentByKey(CacheType.CIRCUIT, key);
   if (bytes) throw Error('Circuit already exists');
-
-  setContentByKey(CacheType.CIRCUIT_FAMILY, key, circuit.toBytes());
+  setContentByKey(CacheType.CIRCUIT, key, circuit.toBytes());
 };
 
-// Implementation
-// 1> Save below 7 predefined circuits into localStorage on initialization
-// 3> Serialize and save each circuit under their own key (e.g., `{$CIRCUIT_KEY_RNG30}`)
-//    Real-world circuits will be probably built and published on blockchain.
-for (const [field, lower] of Constants.CIRCUIT_DEFINED) {
-  const circuit = new ZKCircuitNumberRNG([new ConstraintINT_RNG(field, lower)]);
-  createCircuit(Constants.CIRCUIT_FAMILY, circuit);
+// Create predefined circuits for GPA
+for (const constraint of CONSTRAINTS_GPA) {
+  const purpose = GPACredential.purpose();
+  const circuit = new ZKCircuit([constraint]);
+  if (!hasCircuit(purpose, circuit.toCode())) {
+    createCircuit(purpose, circuit);
+  }
+}
+
+// Create predefined circuits for credit score
+for (const constraint of CONSTRAINTS_CREDITS) {
+  const purpose = CreditScoreCredential.purpose();
+  const circuit = new ZKCircuit([constraint]);
+  if (!hasCircuit(purpose, circuit.toCode())) {
+    createCircuit(purpose, circuit);
+  }
+}
+
+// Create predefined circuits for income
+for (const constraint of CONSTRAINTS_CREDITS) {
+  const purpose = AnnualIncomeCredential.purpose();
+  const circuit = new ZKCircuit([constraint]);
+  if (!hasCircuit(purpose, circuit.toCode())) {
+    createCircuit(purpose, circuit);
+  }
 }

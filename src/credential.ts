@@ -3,142 +3,40 @@ import { Base64 } from 'js-base64';
 import Constants from './lib/constants';
 import { CacheType, DID } from './types';
 import { stringKeccak256 } from './lib/tool';
-// Credential interfaces ////////////////////////////////////////////////////////////////////////////////////
-// `credential.ts`
 
-export interface ICredential {
-  getDID(): DID;
-  getTypeCode(): string;
-  getEncrypted(): string;
-  getCircuitFamily(): string;
-  getFieldValues(): Map<string, number | string>;
-}
-
-// Credential of GPA score
-export class GPACredential implements ICredential {
-  did: DID;
-  GPAScore: number;
-
-  constructor(did: DID, gpa: number) {
+// Credential interfaces
+export abstract class ICredential {
+  private did: DID;
+  constructor(did: DID) {
     this.did = did;
-    this.GPAScore = gpa;
   }
   getDID(): DID {
     return this.did;
   }
-  getTypeCode(): string {
-    return stringKeccak256('credential.findora.org.GPA').slice(-Constants.HashLen);
+  getCommitment() {
+    return stringKeccak256(this.getEncrypted());
   }
-  getEncrypted(): string {
-    // Implementation
-    // Encrypt self into a Base64 string.
-    const ObjectOfthis = Object.assign(
-      {
-        getDID: this.getDID(),
-        getTypeCode: this.getTypeCode(),
-        getCircuitFamily: this.getCircuitFamily(),
-      },
-      this,
-    );
-    return Base64.encode(JSON.stringify(ObjectOfthis));
-  }
-  getCircuitFamily(): string {
-    return Constants.CIRCUIT_FAMILY;
-  }
-  getFieldValues(): Map<string, number | string> {
-    return new Map([['GPAScore', this.GPAScore]]);
-  }
+  abstract getPurpose(): string;
+  abstract getEncrypted(): string;
 }
 
-// Credential of credit score
-export class CreditScoreCredential implements ICredential {
-  did: DID;
-  creditScore: number;
-
-  constructor(did: DID, credit: number) {
-    this.did = did;
-    this.creditScore = credit;
-  }
-  getDID(): DID {
-    return this.did;
-  }
-  getTypeCode(): string {
-    return stringKeccak256('credential.findora.org.CreditScore').slice(-Constants.HashLen);
-  }
-  getEncrypted(): string {
-    // Implementation
-    // Encrypt self into a Base64 string.
-    const ObjectOfthis = Object.assign(
-      {
-        getDID: this.getDID(),
-        getTypeCode: this.getTypeCode(),
-        getCircuitFamily: this.getCircuitFamily(),
-      },
-      this,
-    );
-    return Base64.encode(JSON.stringify(ObjectOfthis));
-  }
-  getCircuitFamily(): string {
-    return Constants.CIRCUIT_FAMILY;
-  }
-  getFieldValues(): Map<string, number | string> {
-    return new Map([['creditScore', this.creditScore]]);
-  }
-}
-
-// Credential of annual income (USD)
-export class AnnualIncomeCredential implements ICredential {
-  did: DID;
-  annualIncomeUsd: number;
-
-  constructor(did: DID, income: number) {
-    this.did = did;
-    this.annualIncomeUsd = income;
-  }
-  getDID(): DID {
-    return this.did;
-  }
-  getTypeCode(): string {
-    return stringKeccak256('credential.findora.org.AnnualIncome').slice(-Constants.HashLen);
-  }
-  getEncrypted(): string {
-    // Implementation
-    // Encrypt self into a Base64 string.
-    const ObjectOfthis = Object.assign(
-      {
-        getDID: this.getDID(),
-        getTypeCode: this.getTypeCode(),
-        getCircuitFamily: this.getCircuitFamily(),
-      },
-      this,
-    );
-    return Base64.encode(JSON.stringify(ObjectOfthis));
-  }
-  getCircuitFamily(): string {
-    return Constants.CIRCUIT_FAMILY;
-  }
-  getFieldValues(): Map<string, number | string> {
-    return new Map([['annualIncomeUsd', this.annualIncomeUsd]]);
-  }
-}
-
-// General ZK credential
+// ZK credential interface
 export interface ZKCredential {
   did: DID;
-  circuitFamily: string;
+  purpose: string;
   credential: string;
   commitment: string;
 }
 
 /**
  * @param did - The did
- * @param typeCode - Credential type code (e.g., '7fed71c88753dc82cd80d84e6f28c588d4c15b88')
+ * @param purpose - Credential purpose code (e.g., '7fed71c88753dc82cd80d84e6f28c588d4c15b88')
  * @returns `true` if `did` already links to a ZKCredential or `false` otherwise
  */
-export const hasZKCredential = (did: DID, typeCode: string): boolean => {
+export const hasZKCredential = (did: DID, purpose: string): boolean => {
   // Implementation
-  // 1> Check existence of ZKCredential in localStorage by key [did + typeCode] (e.g., 'did:key:z6MksFwai2iBGRQdai5KSFP9FsPvZPnYY2FshK2mJ7nrYwZx:7fed71c88753dc82cd80d84e6f28c588d4c15b88').
-  const key = `${did.id}:${typeCode}`;
+  // 1> Check existence of ZKCredential in localStorage by key [did + purpose] (e.g., 'did:key:z6MksFwai2iBGRQdai5KSFP9FsPvZPnYY2FshK2mJ7nrYwZx:7fed71c88753dc82cd80d84e6f28c588d4c15b88').
+  const key = `${did.id}:${purpose}`;
   const zkCred = getContentByKey(CacheType.ZKCredential, key);
   if (!zkCred) return false;
   return true;
@@ -146,55 +44,138 @@ export const hasZKCredential = (did: DID, typeCode: string): boolean => {
 
 /**
  * @param did - The did
- * @param typeCode - Credential type code (e.g., '7fed71c88753dc82cd80d84e6f28c588d4c15b88')
+ * @param purpose - Credential purpose code (e.g., '7fed71c88753dc82cd80d84e6f28c588d4c15b88')
  * @returns The ZKCredential instance linked to `did`
  * @throws Error if ZKCredential doesn't exist
  */
-export const getZKCredential = (did: DID, typeCode: string): ZKCredential => {
-  // if (!hasZKCredential(did, typeCode)) throw Error("ZKCredential doesn't exist");
-
+export const getZKCredential = (did: DID, purpose: string): ZKCredential => {
   // Implementation
   // 1> Get ZKCredential from localStorage by key (same key as above)
-  const key = `${did.id}:${typeCode}`;
-  const credential = getContentByKey(CacheType.ZKCredential, key);
-  if (!credential) throw Error("ZKCredential doesn't exist");
-  const zkCredStr = Base64.decode(credential);
-  const zkCredObj = JSON.parse(zkCredStr);
-  return {
-    did,
-    circuitFamily: zkCredObj.getCircuitFamily,
-    credential,
-    commitment: stringKeccak256(credential),
-  };
+  const key = `${did.id}:${purpose}`;
+  const credStr = getContentByKey(CacheType.ZKCredential, key);
+  if (!credStr) throw Error("ZKCredential doesn't exist");
+  const zkCred: ZKCredential = JSON.parse(credStr);
+  return zkCred;
 };
 
 /**
- * @remark This method converts any credential into ZKCredential and links it to `did`
- * @param did - The did
+ * @remark This method converts any credential into a ZKCredential instance and links it to `did`
+ *         The contents in `cred` is always trusted by API for now.
  * @param cred - The credential instance
- * @returns An instance of ZKCredential based on `cred`
+ * @returns The ZKCredential instance
  */
-export const createZKCredential = (did: DID, cred: ICredential): ZKCredential => {
+export const createZKCredential = (cred: ICredential): ZKCredential => {
   // Implementation
-  // 1>
-  // 2> Get encrypted credential (a Base64 string) by `cred.getEncrypted()`.
+  //
+  // 1> Get encrypted credential (a Base64 string) by `cred.getEncrypted()`.
   //    Real-world encryption could be done by user's encryption key (from Metamask account).
   //
-  // 3> Save above string into localStorage under a proper key (e.g., did:key:z6MksFwai2iBGRQdai5KSFP9FsPvZPnYY2FshK2mJ7nrYwZx:7fed71c88753dc82cd80d84e6f28c588d4c15b88)
-  //    A real-world `did` may own multiple credentials (CreditScoreCredential, GPACredential, ResidentCredential, etc.) and have them stored in IPFS (or offline),
-  //    and the returning `credential` field (in ZKCredential), if stored in IPFS, can be just a link (e.g., ipfs://bafkreian2qdyjirx3yyglkc3yznyw5rliqag3g362ibotgxorieuhftyv4)
-  //    that points to the encrypted credential file.
-  //
-  // 4> The returning `commitment` field (in ZKCredential) can just simply be a Hash (sha256) of `cred` (underlying credential object).
+  // 2> Save below ZKCredential into localStorage (as string) under a proper key (e.g., did:key:z6MksFwai2iBGRQdai5KSFP9FsPvZPnYY2FshK2mJ7nrYwZx:7fed71c88753dc82cd80d84e6f28c588d4c15b88)
+  //    A real-world `did` may own multiple ZK credentials (CreditScoreCredential, GPACredential, ResidentCredential, etc.) represented by on-chain NFTs.
+  //    If stored as an NFT, the key may look like: "0x7fed71c88753dc82cd80d84e6f28c588d4c15b88:16" and the NFT's metadata may points to the encrypted credential on IPFS.
+  /*
+        const zkCred: ZKCredential =
+        {
+          did,
+          purpose: cred.getPurpose(),
+          credential: cred.getEncrypted(),
+          commitment: cred.getCommitment(),
+        };
+  */
+
+  // 3> The `commitment` field (in above ZKCredential) can just simply be a Hash (sha256) of `cred` (underlying credential object).
   //    Real-world commitment is usually published/stored, by ZKCredential issuer, in a smart contract on blockchain.
 
-  const credential = cred.getEncrypted();
-  const key = `${did.id}:${cred.getTypeCode()}`;
-  setContentByKey(CacheType.ZKCredential, key, credential);
-  return {
+  const did = cred.getDID();
+  const key = `${did.id}:${cred.getPurpose()}`;
+  const zkCred: ZKCredential = {
     did,
-    circuitFamily: cred.getCircuitFamily(),
-    credential: credential,
-    commitment: stringKeccak256(credential),
+    purpose: cred.getPurpose(),
+    credential: cred.getEncrypted(),
+    commitment: cred.getCommitment(),
   };
+  // serialize and save zkCred
+  setContentByKey(CacheType.ZKCredential, key, JSON.stringify(zkCred));
+  return zkCred;
 };
+
+// A predefined credential of GPA score
+export class GPACredential extends ICredential {
+  private GPAScore: number;
+  constructor(did: DID, gpa: number) {
+    super(did);
+    this.GPAScore = gpa;
+  }
+  getGPAScore() {
+    return this.GPAScore;
+  }
+  static purpose(): string {
+    return stringKeccak256('credential.findora.org.GPA').slice(-Constants.HashLen);
+  }
+  getPurpose(): string {
+    return GPACredential.purpose();
+  }
+  getEncrypted(): string {
+    // Implementation
+    // Encrypt self into a Base64 string.
+    const ObjectOfthis = {
+      did: this.getDID(),
+      GPAScore: this.getGPAScore(),
+    };
+    return Base64.encode(JSON.stringify(ObjectOfthis));
+  }
+}
+
+// A predefined credential of credit score
+export class CreditScoreCredential extends ICredential {
+  private creditScore: number;
+  constructor(did: DID, credit: number) {
+    super(did);
+    this.creditScore = credit;
+  }
+  getCreditScore() {
+    return this.creditScore;
+  }
+  static purpose(): string {
+    return stringKeccak256('credential.findora.org.CreditScore').slice(-Constants.HashLen);
+  }
+  getPurpose(): string {
+    return CreditScoreCredential.purpose();
+  }
+  getEncrypted(): string {
+    // Implementation
+    // Encrypt self into a Base64 string.
+    const ObjectOfthis = {
+      did: this.getDID(),
+      creditScore: this.getCreditScore(),
+    };
+    return Base64.encode(JSON.stringify(ObjectOfthis));
+  }
+}
+
+// A predefined credential of annual income (USD)
+export class AnnualIncomeCredential extends ICredential {
+  private annualIncomeUsd: number;
+  constructor(did: DID, income: number) {
+    super(did);
+    this.annualIncomeUsd = income;
+  }
+  getAnnualIncomeUsd() {
+    return this.annualIncomeUsd;
+  }
+  static purpose(): string {
+    return stringKeccak256('credential.findora.org.AnnualIncome').slice(-Constants.HashLen);
+  }
+  getPurpose(): string {
+    return AnnualIncomeCredential.purpose();
+  }
+  getEncrypted(): string {
+    // Implementation
+    // Encrypt self into a Base64 string.
+    const ObjectOfthis = {
+      did: this.getDID(),
+      creditScore: this.getAnnualIncomeUsd(),
+    };
+    return Base64.encode(JSON.stringify(ObjectOfthis));
+  }
+}
