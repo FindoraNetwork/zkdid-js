@@ -106,11 +106,17 @@ export class GPACredential extends ICredential {
     super(did);
     this.GPAScore = gpa;
   }
+  static issuer(): string {
+    return 'credential.findora.org';
+  }
+  static purpose(): string {
+    return stringKeccak256('{GPACredential.issuer()}.GPA').slice(-Constants.HashLen);
+  }
   getGPAScore() {
     return this.GPAScore;
   }
-  static purpose(): string {
-    return stringKeccak256('credential.findora.org.GPA').slice(-Constants.HashLen);
+  getIssuer(): string {
+    return GPACredential.issuer();
   }
   getPurpose(): string {
     return GPACredential.purpose();
@@ -133,11 +139,17 @@ export class CreditScoreCredential extends ICredential {
     super(did);
     this.creditScore = credit;
   }
+  static issuer(): string {
+    return 'credential.findora.org';
+  }
+  static purpose(): string {
+    return stringKeccak256('{CreditScoreCredential.issuer()}.CreditScore').slice(-Constants.HashLen);
+  }
   getCreditScore() {
     return this.creditScore;
   }
-  static purpose(): string {
-    return stringKeccak256('credential.findora.org.CreditScore').slice(-Constants.HashLen);
+  getIssuer(): string {
+    return CreditScoreCredential.issuer();
   }
   getPurpose(): string {
     return CreditScoreCredential.purpose();
@@ -160,11 +172,17 @@ export class AnnualIncomeCredential extends ICredential {
     super(did);
     this.annualIncomeUsd = income;
   }
+  static issuer(): string {
+    return 'credential.findora.org';
+  }
+  static purpose(): string {
+    return stringKeccak256('{AnnualIncomeCredential.issuer()}.AnnualIncome').slice(-Constants.HashLen);
+  }
   getAnnualIncomeUsd() {
     return this.annualIncomeUsd;
   }
-  static purpose(): string {
-    return stringKeccak256('credential.findora.org.AnnualIncome').slice(-Constants.HashLen);
+  getIssuer(): string {
+    return CreditScoreCredential.issuer();
   }
   getPurpose(): string {
     return AnnualIncomeCredential.purpose();
