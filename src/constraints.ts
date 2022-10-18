@@ -1,6 +1,13 @@
 // ZK constraints
 
 // Contraint interface
+
+export const Constraints: Class<any>[] = [];
+
+interface Class<T> {
+  new (...args: any[]): T;
+}
+
 export abstract class IConstraint {
   private field: string;
   constructor(field: string) {
@@ -10,7 +17,26 @@ export abstract class IConstraint {
     return this.field;
   }
   abstract verify(value: any): boolean;
+
+  /**
+   * Serialize the input parameters of its own constructor
+   */
+  abstract serialize(): string;
 }
+
+export const registerConstraint = (ConstraintClass: Class<IConstraint>) => {
+  Constraints.push(ConstraintClass);
+};
+
+export const getKeyOfConstraint = (ctr: any) => {
+  const ctrClass = Constraints.find((v) => ctr instanceof v);
+  if (!ctrClass) throw new Error('Unregistered Constraint');
+  return Constraints.indexOf(ctrClass);
+};
+
+export const getConstraintByKey = (key: number) => {
+  return Constraints[key];
+};
 
 // The contraint to verify range proof on number
 export class ConstraintINT_RNG extends IConstraint {
@@ -27,7 +53,11 @@ export class ConstraintINT_RNG extends IConstraint {
     }
     throw new Error(`Expected number, got '${typeof value}'.`);
   }
+  serialize() {
+    return JSON.stringify([this.getField(), this.lower, this.upper]);
+  }
 }
+registerConstraint(ConstraintINT_RNG);
 
 // The contraint to verify range proof on string
 export class ConstraintSTR_RNG extends IConstraint {
@@ -42,7 +72,11 @@ export class ConstraintSTR_RNG extends IConstraint {
     }
     throw new Error(`Expected string, got '${typeof value}'.`);
   }
+  serialize() {
+    return JSON.stringify([this.getField(), this.range]);
+  }
 }
+registerConstraint(ConstraintSTR_RNG);
 
 // Some predefined constraints
 export const CONSTRAINT_GPA_30 = new ConstraintINT_RNG('GPAScore', 3.0);

@@ -5,7 +5,7 @@ import Constants from './lib/constants';
 import { getZKCredential, ZKCredential } from './credential';
 import { getCircuit, ZKCircuit } from './circuit';
 import { callApi } from './lib/tool';
-import { getDID } from './did';
+import { didEqual, getDID } from './did';
 
 // ZKP interfaces
 
@@ -87,15 +87,22 @@ export const verifyZKProof = (prover: string, zkProof: ZKProof): boolean => {
   //
   // 7> Decode `zkProof.proof` with Base64 and parse as object. (To simulate, verifier pretends that he/she can't see/decode actual values in the `zkProof.proof`)
   //    Example:
-  const credObj = JSON.parse('decoded-JSON-String');
+  if (!didEqual(zkCred.did, did)) return false;
+  if (zkCred.purpose !== zkProof.purpose) return false;
+  // ...
+  if (zkCred.commitment !== zkProof.commitment) return false;
+
+  const circuit = getCircuit(zkProof.purpose, zkProof.code);
+
+  const credObj: Record<string, any> = JSON.parse(Base64.decode(zkProof.proof));
   const fields = new Map();
   Object.entries(credObj).forEach(([field, value]) => {
     fields.set(field, value);
   });
+  return circuit.verify(fields);
   //
   // 8> Verify `fields` against `circuit` by `circuit.verify(fields)`
   //
-  return true;
 };
 
 /**

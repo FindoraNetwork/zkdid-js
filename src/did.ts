@@ -54,3 +54,18 @@ export const createDID = (address: string): DID => {
   setContentByKey(CacheType.DID, address, did);
   return did;
 };
+
+export const isDID = (did: any): did is DID => {
+  if (typeof did !== 'object') return false;
+  if (!did) return false;
+  if (!('id' in did)) return false;
+  if (typeof did.id !== 'string') return false;
+  if (!did.id) return false;
+  return true;
+};
+
+export const didEqual = (didA: DID, didB: DID) => {
+  if (!isDID(didA)) return false;
+  if (!isDID(didB)) return false;
+  return didA.id === didB.id;
+};

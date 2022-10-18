@@ -110,7 +110,7 @@ export class GPACredential extends ICredential {
     return 'credential.findora.org';
   }
   static purpose(): string {
-    return stringKeccak256('{GPACredential.issuer()}.GPA').slice(-Constants.HashLen);
+    return stringKeccak256(`${GPACredential.issuer()}.GPA`).slice(-Constants.HashLen);
   }
   getGPAScore() {
     return this.GPAScore;
@@ -143,7 +143,7 @@ export class CreditScoreCredential extends ICredential {
     return 'credential.findora.org';
   }
   static purpose(): string {
-    return stringKeccak256('{CreditScoreCredential.issuer()}.CreditScore').slice(-Constants.HashLen);
+    return stringKeccak256(`${CreditScoreCredential.issuer()}.CreditScore`).slice(-Constants.HashLen);
   }
   getCreditScore() {
     return this.creditScore;
@@ -176,7 +176,7 @@ export class AnnualIncomeCredential extends ICredential {
     return 'credential.findora.org';
   }
   static purpose(): string {
-    return stringKeccak256('{AnnualIncomeCredential.issuer()}.AnnualIncome').slice(-Constants.HashLen);
+    return stringKeccak256(`${AnnualIncomeCredential.issuer()}.AnnualIncome`).slice(-Constants.HashLen);
   }
   getAnnualIncomeUsd() {
     return this.annualIncomeUsd;

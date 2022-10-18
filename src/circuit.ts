@@ -1,6 +1,5 @@
 import { getContentByKey, setContentByKey } from './lib/cache';
-import { IConstraint, CONSTRAINTS_GPA, CONSTRAINTS_CREDITS, CONSTRAINTS_INCOME } from './constraints';
-import Constants from './lib/constants';
+import { IConstraint, CONSTRAINTS_GPA, CONSTRAINTS_CREDITS, CONSTRAINTS_INCOME, getKeyOfConstraint, getConstraintByKey } from './constraints';
 import { stringKeccak256 } from './lib/tool';
 import { CacheType } from './types';
 import { AnnualIncomeCredential, CreditScoreCredential, GPACredential } from './credential';
@@ -18,22 +17,31 @@ export class ZKCircuit {
     return stringKeccak256(this.toBytes());
   }
   toBytes(): string {
-    return JSON.stringify(this);
+    const strThis = this.constraints.map((ctr) => ctr.serialize());
+    const keys = this.constraints.map((ctr) => getKeyOfConstraint(ctr));
+    return JSON.stringify([strThis, keys]);
   }
   static fromBytes(bytes: string): ZKCircuit {
-    return Object.assign(new this(), JSON.parse(bytes));
+    const bytesObj: [string[], number[]] = JSON.parse(bytes);
+    const constraints = bytesObj[1].map((key, index) => {
+      const argStr = bytesObj[0][index];
+      const arg: any[] = JSON.parse(argStr);
+      const Class = getConstraintByKey(key);
+      return new Class(...arg);
+    });
+    return new ZKCircuit(constraints);
   }
   verify(fields: Map<string, number | string>): boolean {
     // verify `fields` against every contrait
 
     // Implementation:
     //
-    /* Example:
+    // Example:
     for (let i = 0; i < this.constraints.length; i++) {
-      const value = fields.get(this.constraints[i].getField());
+      const field = this.constraints[i].getField();
+      const value = fields.get(field);
       if (!this.constraints[i].verify(value)) return false;
     }
-    */
     return true;
   }
 }
