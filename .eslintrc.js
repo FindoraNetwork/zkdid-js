@@ -1,11 +1,19 @@
-const path = require('path');
-
 module.exports = {
   env: {
     browser: true,
     es2021: true,
   },
-  extends: ['plugin:react/recommended', 'plugin:prettier/recommended', 'airbnb', 'airbnb/hooks', 'prettier'],
+  extends: [
+    'plugin:react/recommended',
+    'plugin:prettier/recommended',
+    'airbnb',
+    'airbnb/hooks',
+    'prettier',
+    //  eslint-plugin-react
+    'prettier/react',
+    //  @typescript-eslint/eslint-plugin
+    'prettier/@typescript-eslint',
+  ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaFeatures: {
@@ -18,15 +26,13 @@ module.exports = {
   rules: {
     'no-var': 'error',
     '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
-    'react/button-has-type': 'off',
-    'react/prop-types': 'off',
-    'react/sort-comp': 'off',
-    'import/extensions': 'off',
+    'react/button-has-type': 'never',
+    'react/prop-types': 'never',
+    'react/sort-comp': 'never',
+    'import/extensions': 'never',
     'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx', '.ts', '.tsx'] }],
     'no-useless-constructor': 'off',
-    'no-unused-vars': 'off',
     '@typescript-eslint/no-useless-constructor': 'error',
-    'no-console': process.env.NODE_ENV === 'development' ? 'off' : 'error',
   },
   overrides: [
     {
@@ -39,7 +45,7 @@ module.exports = {
   settings: {
     'import/resolver': {
       node: {
-        extensions: ['.js', '.less', '.scss', '.jsx', '.tsx', '.ts', '.json', '.jsonc', '.wasm'],
+        extensions: ['.js', '.less', '.jsx', '.json', '.jsonc', '.wasm'],
       },
       alias: {
         map: [
@@ -50,7 +56,7 @@ module.exports = {
           ['_utils', path.resolve(__dirname, './src/utils/')],
           ['_assets', path.resolve(__dirname, 'src/assets/')],
         ],
-        extensions: ['.js', '.less', '.scss', '.jsx', '.tsx', '.ts', '.json', '.jsonc', '.wasm'],
+        extensions: ['.js', '.less', '.jsx', '.json', '.jsonc', '.wasm'],
       },
     },
   },
