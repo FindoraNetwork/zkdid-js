@@ -147,7 +147,7 @@
     "use-immer": "^0.5.1",
     "wagmi": "^0.6.8",
     "web3": "^1.4.0",
-    "zkdid": "./zkDID"
+    "zkdid": "./dist"
   },
   "browserslist": {
     "production": [
