@@ -45,7 +45,7 @@ module.exports = {
   settings: {
     'import/resolver': {
       node: {
-        extensions: ['.js', '.less', '.jsx', '.json', '.jsonc', '.wasm'],
+        extensions: ['.js', '.less', '.jsx', '.ts', '.tsx', '.json', '.jsonc', '.wasm'],
       },
       alias: {
         map: [
@@ -56,7 +56,7 @@ module.exports = {
           ['_utils', path.resolve(__dirname, './src/utils/')],
           ['_assets', path.resolve(__dirname, 'src/assets/')],
         ],
-        extensions: ['.js', '.less', '.jsx', '.json', '.jsonc', '.wasm'],
+        extensions: ['.js', '.less', '.jsx', '.ts', '.tsx', '.json', '.jsonc', '.wasm'],
       },
     },
   },

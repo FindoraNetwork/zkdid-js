@@ -1,7 +1,14 @@
 import React from "react";
+import * as zkDID from 'zkdid/did'
 
 const HomeIndex: React.FC = () => {
-  return null;
+  const did = zkDID.getDID('sssssss');
+
+  return (
+    <div>
+      {did.id}
+    </div>
+  );
 }
 
 export default HomeIndex;

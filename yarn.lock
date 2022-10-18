@@ -13595,6 +13595,9 @@ yoctodelay@^1.1.0:
   resolved "https://registry.npmmirror.com/yoctodelay/-/yoctodelay-1.2.0.tgz#0d020c8bcec22989369db31e5d352acc6a13eda8"
   integrity sha512-12y/P9MSig9/5BEhBgylss+fkHiCRZCvYR81eH35NW9uw801cvJt31EAV+WOLcwZRZbLiIQl/hxcdXXXFmGvXg==
 
+zkdid@./zkDID:
+  version "0.0.0"
+
 zrender@5.4.0:
   version "5.4.0"
   resolved "https://registry.npmmirror.com/zrender/-/zrender-5.4.0.tgz#d4f76e527b2e3bbd7add2bdaf27a16af85785576"
