@@ -1,8 +1,8 @@
 import React from "react";
-import zkDID from 'zkdid'
+import zkDID from '../dist'
 
 const HomeIndex: React.FC = () => {
-  const did = zkDID.getDID('sssssss');
+  const did = zkDID.did.getDID('sssssss');
 
   return (
     <div>

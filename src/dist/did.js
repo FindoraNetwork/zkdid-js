@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.didEqual = exports.isDID = exports.createDID = exports.getDID = exports.hasDID = void 0;
 const cache_1 = require("./lib/cache");
-const didkit_1 = __importDefault(require("@spruceid/didkit"));
+const didkit_wasm_1 = __importDefault(require("@spruceid/didkit-wasm"));
 const types_1 = require("./types");
 // DID interfaces ///////////////////////////////////////////////////////////////////////////////////////////
 /**
@@ -51,8 +51,8 @@ const createDID = (address) => {
     // 2> Use SpruceID (https://www.npmjs.com/package/@spruceid/didkit-wasm) API to generate DID.
     //    Here is a 5-line of example: https://www.spruceid.dev/didkit/didkit-packages/javascript
     // 3> Assign/link newly created DID to `address`
-    const key = didkit_1.default.generateEd25519Key();
-    const did = { id: didkit_1.default.keyToDID('key', key) };
+    const key = didkit_wasm_1.default.generateEd25519Key();
+    const did = { id: didkit_wasm_1.default.keyToDID('key', key) };
     (0, cache_1.setContentByKey)(types_1.CacheType.DID, address, did);
     return did;
 };
