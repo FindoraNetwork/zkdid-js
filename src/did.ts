@@ -1,5 +1,5 @@
 import { getContentByKey, setContentByKey } from './lib/cache';
-import DIDKit from '@spruceid/didkit';
+import DIDKit from '@spruceid/didkit-wasm';
 import { address, CacheType, DID } from './types';
 
 // DID interfaces ///////////////////////////////////////////////////////////////////////////////////////////
