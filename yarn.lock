@@ -2075,6 +2075,11 @@
     superstruct "^0.14.2"
     tweetnacl "^1.0.3"
 
+"@spruceid/didkit-wasm@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.npmmirror.com/@spruceid/didkit-wasm/-/didkit-wasm-0.2.1.tgz#c9cb67df962e568414e6d9946f8563056f263abe"
+  integrity sha512-Qi0ZVS2vNA6iVwOzfIdyVQSj1Q88DgV0HyjnQGZ84YsrjaxbCSPwyhZs3TBzUGKwvoyiGCvWohYnL0G3BsPEMQ==
+
 "@spruceid/didkit@^0.3.0-beta.3":
   version "0.3.0-beta.3"
   resolved "https://registry.npmmirror.com/@spruceid/didkit/-/didkit-0.3.0-beta.3.tgz#ec662897e7d1751a2ff617853a0d4306dec305c6"
