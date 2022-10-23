@@ -1,5 +1,5 @@
 import { getContentByKey, setContentByKey } from './lib/cache';
-import DIDKit from '@spruceid/didkit-wasm';
+import * as DIDKit from '@spruceid/didkit-wasm';
 import { address, CacheType, DID } from './types';
 
 // DID interfaces ///////////////////////////////////////////////////////////////////////////////////////////
@@ -48,7 +48,6 @@ export const createDID = (address: string): DID => {
   // 2> Use SpruceID (https://www.npmjs.com/package/@spruceid/didkit-wasm) API to generate DID.
   //    Here is a 5-line of example: https://www.spruceid.dev/didkit/didkit-packages/javascript
   // 3> Assign/link newly created DID to `address`
-
   const key = DIDKit.generateEd25519Key();
   const did = { id: DIDKit.keyToDID('key', key) };
   setContentByKey(CacheType.DID, address, did);
