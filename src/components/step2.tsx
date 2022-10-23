@@ -50,14 +50,14 @@ class KYC_Credential extends ICredential {
 }
 const KYC_Born_in_the_20th_century_min = new Date('1901-01-01').getTime();
 const KYC_Born_in_the_20th_century_max = new Date('2000-12-31').getTime();
-const KYC_Born_in_the_20th_century = new ConstraintINT_RNG( 'timeOfBirth', KYC_Born_in_the_20th_century_min, KYC_Born_in_the_20th_century_max);
+const KYC_Born_in_the_20th_century = new ConstraintINT_RNG('timeOfBirth', KYC_Born_in_the_20th_century_min, KYC_Born_in_the_20th_century_max);
 
 const KYC_Country_ASoutheast_Asia_v0001_range = [
   'Philippines', 'Vietnam', 'Laos', 'Cambodia', 'Myanmar',
   'Thailand', 'Malaysia', 'Brunei', 'Singapore', 'Indonesia',
   'Timor Leste'
 ];
-const KYC_Country_ASoutheast_Asia_v0001 = new ConstraintSTR_RNG('country',KYC_Country_ASoutheast_Asia_v0001_range);
+const KYC_Country_ASoutheast_Asia_v0001 = new ConstraintSTR_RNG('country', KYC_Country_ASoutheast_Asia_v0001_range);
 
 const TestUsernumber = 10;
 const Step2: React.FC = (props) => {
@@ -150,7 +150,7 @@ const Step2: React.FC = (props) => {
           return 'my credential';
         }
         static purpose(): string {
-          return stringKeccak256(\`\${this.issuer()}.xx-value\`);
+          return stringKeccak256(\`\${this.issuer()}.kyc-info\`);
         }
         getInfo() {
           return this.info;
@@ -164,22 +164,24 @@ const Step2: React.FC = (props) => {
         getEncrypted(): string {
           const ObjectOfthis = {
             did: this.getDID(),
-            value: this.getInfo(),
+            timeOfBirth: this.info.timeOfBirth,
+            name: this.info.name,
+            country: this.info.country
           };
           return Base64.encode(JSON.stringify(ObjectOfthis));
         }
       }
-
       const KYC_Born_in_the_20th_century_min = new Date('1901-01-01').getTime();
       const KYC_Born_in_the_20th_century_max = new Date('2000-12-31').getTime();
-      const KYC_Born_in_the_20th_century = new ConstraintINT_RNG( 'timeOfBirth', KYC_Born_in_the_20th_century_min, KYC_Born_in_the_20th_century_max);
+      const KYC_Born_in_the_20th_century = new ConstraintINT_RNG('timeOfBirth', KYC_Born_in_the_20th_century_min, KYC_Born_in_the_20th_century_max);
 
       const KYC_Country_ASoutheast_Asia_v0001_range = [
         'Philippines', 'Vietnam', 'Laos', 'Cambodia', 'Myanmar',
         'Thailand', 'Malaysia', 'Brunei', 'Singapore', 'Indonesia',
         'Timor Leste'
       ];
-      const KYC_Country_ASoutheast_Asia_v0001 = new ConstraintSTR_RNG('country',KYC_Country_ASoutheast_Asia_v0001_range);
+      const KYC_Country_ASoutheast_Asia_v0001 = new ConstraintSTR_RNG('country', KYC_Country_ASoutheast_Asia_v0001_range);
+
       const TestUsernumber = 10;
 
       const [users] = useState(() => new Array(TestUsernumber).fill(null).map((v, i) => {

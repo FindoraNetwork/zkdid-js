@@ -44,14 +44,15 @@ class KYC_Credential extends ICredential {
       did: this.getDID(),
       timeOfBirth: this.info.timeOfBirth,
       name: this.info.name,
-      country: this.info.country
+      country: this.info.country,
+      gender: this.info.gender,
     };
     return Base64.encode(JSON.stringify(ObjectOfthis));
   }
 }
-const KYC_Born_in_1990_2000 = new ConstraintINT_RNG('timeOfBirth', new Date('1990-01-01').getTime(), new Date('2001-01-01').getTime());
+const KYC_Born_in_1970_1990 = new ConstraintINT_RNG('timeOfBirth', new Date('1970-01-01').getTime(), new Date('1991-01-01').getTime());
 const KYC_Born_in_1980_2000 = new ConstraintINT_RNG('timeOfBirth', new Date('1980-01-01').getTime(), new Date('2001-01-01').getTime());
-const KYC_Born_in_2000_2020 = new ConstraintINT_RNG('timeOfBirth', new Date('2000-01-01').getTime(), new Date('2021-01-01').getTime());
+const KYC_Born_in_1990_2000 = new ConstraintINT_RNG('timeOfBirth', new Date('1990-01-01').getTime(), new Date('2001-01-01').getTime());
 
 const KYC_Country_ASoutheast_Asia_v0001_range = [
   'Philippines', 'Vietnam', 'Laos', 'Cambodia', 'Myanmar',
@@ -67,13 +68,15 @@ const KYC_Gender_Female = new ConstraintSTR_RNG('gender', ['Female']);
 const KYC_Gender_Known = new ConstraintSTR_RNG('gender', ['Female', 'Male']);
 
 const purpose = KYC_Credential.purpose();
+
 const KYC_1990_2000_Philippines_Male = new ZKCircuit([
   KYC_Born_in_1990_2000,
   KYC_Country_Philippines,
   KYC_Gender_Male
 ]);
-const KYC_2000_2020_USA_Known = new ZKCircuit([
-  KYC_Born_in_2000_2020,
+const KYC_1980_1990_USA_Known = new ZKCircuit([
+  KYC_Born_in_1970_1990,
+  KYC_Born_in_1980_2000,
   KYC_Country_USA,
   KYC_Gender_Known
 ]);
@@ -83,33 +86,33 @@ const KYC_1980_2000_Southeast_Asia_v0001_Femal = new ZKCircuit([
   KYC_Gender_Female
 ]);
 const KYC_Femal = new ZKCircuit([
-  KYC_Born_in_1980_2000,
-  KYC_Country_ASoutheast_Asia_v0001,
   KYC_Gender_Female
 ]);
 const zkCircuits = [
   KYC_1990_2000_Philippines_Male,
-  KYC_2000_2020_USA_Known,
-  KYC_1980_2000_Southeast_Asia_v0001_Femal
+  KYC_1980_1990_USA_Known,
+  KYC_1980_2000_Southeast_Asia_v0001_Femal,
+  KYC_Femal
 ];
 zkCircuits.forEach(zkCircuit => {
   if (hasCircuit(purpose, zkCircuit.toCode())) return;
   createCircuit(purpose, zkCircuit);
 });
 
-const TestUsernumber = 10;
+const TestUsernumber = 40;
+
 const Step3: React.FC = (props) => {
   const [users, _users] = useState(() => new Array(TestUsernumber).fill(null).map((v, i) => {
-    const minTime = new Date('1971-01-01').getTime();
-    const maxTime = new Date('2030-01-01').getTime();
-    const country_list = ['Philippines', 'Myanmar', 'Thailand', 'Malaysia', 'Brunei', 'Singapore', 'USA', 'none', 'Japan', 'Germany'];
+    const minTime = new Date('1970-01-01').getTime();
+    const maxTime = new Date('2000-01-01').getTime();
+    const country_list = ['Philippines', 'USA', 'none', 'Japan'];
     const gender_list: KYC_Info['gender'][] = ['Male', 'Female', 'unknown'];
     const address = ethers.Wallet.createRandom().address;
     if (false === zkDID.did.hasDID(address)) zkDID.did.createDID(address);
     const did = zkDID.did.getDID(address);
     const info = {
       timeOfBirth: randomNumber(minTime, maxTime),
-      name: `user-${(i+10).toString(36)}`,
+      name: `${(i+10).toString(36)}`,
       country: country_list[randomNumber(0, country_list.length)],
       gender: gender_list[randomNumber(0, gender_list.length)],
     };
@@ -117,16 +120,10 @@ const Step3: React.FC = (props) => {
       address,
       info,
       kyc: new KYC_Credential(did, info),
-      verifyResult: [null, null, null] as Array<null | boolean>
+      verifyResult: zkCircuits.map(() => null) as Array<null | boolean>
     }
   }));
   useEffect(() => {
-    update();
-  }, []);
-
-  async function update() {
-    // create circuits
-
     users.forEach(async (user, index) => {
       const did = user.kyc.getDID();
       if (false === hasZKCredential(did, purpose)) createZKCredential(user.kyc);
@@ -143,14 +140,35 @@ const Step3: React.FC = (props) => {
         });
       });
     });
-  }
+  }, []);
+  const table_th = [
+    'name', 'timeOfBirth', 'country', 'gender',
+    '1990_2000<br/>Philippines<br/>Male',
+    '1980_1990<br/>USA<br/>Known',
+    '1980_2000<br/>Southeast_Asia_v0001<br/>Femal',
+    'Femal'
+  ];
 
   return <MarkdownCpt md={`
     # example 3
     ### use create credential and circuits to create proofs and verify
 
-    |  address  | name  | timeOfBirth  | country  | verify  |
-    |----|----|----|----|----|
+    |  ${table_th.join('  |  ')}  |
+    |${table_th.map(() => '---').join('|')}|
+    ${users.map((user, index) => {
+      // const timeStr = new Date(user.info.timeOfBirth).toISOString().replace(/T(.*)/, '');
+      const result = [
+        user.info.name,
+        new Date(user.info.timeOfBirth).toISOString().replace(/T(.*)/, ''),
+        user.info.country,
+        user.info.gender,
+        ...zkCircuits.map((v, i) => {
+          const res = String(user.verifyResult[i]);
+          return res === 'false' ? `\`${res}\`` : res;
+        })
+      ];
+      return `|${result.join('|')}|`;
+    }).join('\r')}
 
     \`\`\`ts
       import zkDID from 'zkDID';
@@ -167,6 +185,7 @@ const Step3: React.FC = (props) => {
         timeOfBirth: number;
         name: string;
         country: string;
+        gender: 'Male' | 'Female' | 'unknown';
       }
       class KYC_Credential extends ICredential {
         private info: KYC_Info
@@ -176,10 +195,10 @@ const Step3: React.FC = (props) => {
           this.info = info;
         }
         static issuer(): string {
-          return 'my credential';
+          return 'my kyc credential';
         }
         static purpose(): string {
-          return stringKeccak256(\`\${this.issuer()}.xx-value\`);
+          return stringKeccak256(\`\${this.issuer()}.a-kyc-info\`);
         }
         getInfo() {
           return this.info;
@@ -193,59 +212,104 @@ const Step3: React.FC = (props) => {
         getEncrypted(): string {
           const ObjectOfthis = {
             did: this.getDID(),
-            value: this.getInfo(),
+            timeOfBirth: this.info.timeOfBirth,
+            name: this.info.name,
+            country: this.info.country,
+            gender: this.info.gender,
           };
           return Base64.encode(JSON.stringify(ObjectOfthis));
         }
       }
-
-      const KYC_Born_in_the_20th_century_min = new Date('1901-01-01').getTime();
-      const KYC_Born_in_the_20th_century_max = new Date('2000-12-31').getTime();
-      const KYC_Born_in_the_20th_century = new ConstraintINT_RNG( 'timeOfBirth', KYC_Born_in_the_20th_century_min, KYC_Born_in_the_20th_century_max);
+      const KYC_Born_in_1970_1990 = new ConstraintINT_RNG('timeOfBirth', new Date('1970-01-01').getTime(), new Date('1991-01-01').getTime());
+      const KYC_Born_in_1980_2000 = new ConstraintINT_RNG('timeOfBirth', new Date('1980-01-01').getTime(), new Date('2001-01-01').getTime());
+      const KYC_Born_in_1990_2000 = new ConstraintINT_RNG('timeOfBirth', new Date('1990-01-01').getTime(), new Date('2001-01-01').getTime());
 
       const KYC_Country_ASoutheast_Asia_v0001_range = [
         'Philippines', 'Vietnam', 'Laos', 'Cambodia', 'Myanmar',
         'Thailand', 'Malaysia', 'Brunei', 'Singapore', 'Indonesia',
         'Timor Leste'
       ];
-      const KYC_Country_ASoutheast_Asia_v0001 = new ConstraintSTR_RNG('country',KYC_Country_ASoutheast_Asia_v0001_range);
-      const TestUsernumber = 10;
+      const KYC_Country_ASoutheast_Asia_v0001 = new ConstraintSTR_RNG('country', KYC_Country_ASoutheast_Asia_v0001_range);
+      const KYC_Country_Philippines = new ConstraintSTR_RNG('country', ['Philippines']);
+      const KYC_Country_USA = new ConstraintSTR_RNG('country', ['USA']);
 
-      const [users] = useState(() => new Array(TestUsernumber).fill(null).map((v, i) => {
-        const minTime = new Date('1801-01-01').getTime();
-        const maxTime = new Date('2100-12-31').getTime();
-        const country_list = ['Philippines', 'Myanmar', 'Thailand', 'Malaysia', 'Brunei', 'Singapore', 'USA', 'none', 'Japan', 'Germany'];
+      const KYC_Gender_Male = new ConstraintSTR_RNG('gender', ['Male']);
+      const KYC_Gender_Female = new ConstraintSTR_RNG('gender', ['Female']);
+      const KYC_Gender_Known = new ConstraintSTR_RNG('gender', ['Female', 'Male']);
 
+      const purpose = KYC_Credential.purpose();
+
+      const KYC_1990_2000_Philippines_Male = new ZKCircuit([
+        KYC_Born_in_1990_2000,
+        KYC_Country_Philippines,
+        KYC_Gender_Male
+      ]);
+      const KYC_1980_1990_USA_Known = new ZKCircuit([
+        KYC_Born_in_1970_1990,
+        KYC_Born_in_1980_2000,
+        KYC_Country_USA,
+        KYC_Gender_Known
+      ]);
+      const KYC_1980_2000_Southeast_Asia_v0001_Femal = new ZKCircuit([
+        KYC_Born_in_1980_2000,
+        KYC_Country_ASoutheast_Asia_v0001,
+        KYC_Gender_Female
+      ]);
+      const KYC_Femal = new ZKCircuit([
+        KYC_Gender_Female
+      ]);
+      const zkCircuits = [
+        KYC_1990_2000_Philippines_Male,
+        KYC_1980_1990_USA_Known,
+        KYC_1980_2000_Southeast_Asia_v0001_Femal,
+        KYC_Femal
+      ];
+      zkCircuits.forEach(zkCircuit => {
+        if (hasCircuit(purpose, zkCircuit.toCode())) return;
+        createCircuit(purpose, zkCircuit);
+      });
+
+      const TestUsernumber = 40;
+
+      const [users, _users] = useState(() => new Array(TestUsernumber).fill(null).map((v, i) => {
+        const minTime = new Date('1970-01-01').getTime();
+        const maxTime = new Date('2000-01-01').getTime();
+        const country_list = ['Philippines', 'USA', 'none', 'Japan'];
+        const gender_list: KYC_Info['gender'][] = ['Male', 'Female', 'unknown'];
         const address = ethers.Wallet.createRandom().address;
         if (false === zkDID.did.hasDID(address)) zkDID.did.createDID(address);
         const did = zkDID.did.getDID(address);
         const info = {
           timeOfBirth: randomNumber(minTime, maxTime),
-          name: \`user-\${(i+10).toString(36)}\`,
+          name: \`\${(i+10).toString(36)}\`,
           country: country_list[randomNumber(0, country_list.length)],
+          gender: gender_list[randomNumber(0, gender_list.length)],
         };
         return {
           address,
           info,
-          kyc: new KYC_Credential(did, info)
+          kyc: new KYC_Credential(did, info),
+          verifyResult: zkCircuits.map(() => null) as Array<null | boolean>
         }
       }));
-
-      // create circuit
-      const purpose = KYC_Credential.purpose();
-      const zkCircuit = new ZKCircuit([KYC_Born_in_the_20th_century, KYC_Country_ASoutheast_Asia_v0001]);
-      const code = zkCircuit.toCode();
-      if (false === hasCircuit(purpose, zkCircuit.toCode())) createCircuit(purpose, zkCircuit);
-      // const circuit = getCircuit(purpose, zkCircuit.toCode());
-
-      users.forEach(async (user, index) => {
-        const did = user.kyc.getDID();
-        if (false === hasZKCredential(did, purpose)) createZKCredential(user.kyc);
-        const zkCred = getZKCredential(did, purpose);
-        const zkProof = await generateZKProof(zkCred, code);
-        const res = verifyZKProof(zkProof, user.address, purpose);
-        _verify(v => (v[index] = res, [...v]));
-      });
+      useEffect(() => {
+        users.forEach(async (user, index) => {
+          const did = user.kyc.getDID();
+          if (false === hasZKCredential(did, purpose)) createZKCredential(user.kyc);
+          const zkCred = getZKCredential(did, purpose);
+          zkCircuits.forEach(async (zkCircuit, vIndex) => {
+            const zkProof = await generateZKProof(zkCred, zkCircuit.toCode());
+            const res = verifyZKProof(zkProof, user.address, purpose);
+            _users(us => {
+              const u = users[index];
+              u.verifyResult[vIndex] = res;
+              u.verifyResult = [...u.verifyResult];
+              us[index] = {...u};
+              return [...us];
+            });
+          });
+        });
+      }, []);
     \`\`\`
   `} />;
 }

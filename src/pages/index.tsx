@@ -36,7 +36,7 @@ const HomeIndex: React.FC = () => {
     <div>
       {steps[0] && <Step1 />}
       {steps[1] && <Step2 />}
-      {/* {steps[2] && <Step3 />} */}
+      {steps[2] && <Step3 />}
     </div>
   );
 }
