@@ -8,4 +8,3 @@
 extensions/
 node_modules
 *.zip
-dist
