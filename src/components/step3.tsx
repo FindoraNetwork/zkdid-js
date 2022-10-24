@@ -99,10 +99,10 @@ zkCircuits.forEach(zkCircuit => {
   createCircuit(purpose, zkCircuit);
 });
 
-const TestUsernumber = 40;
+const UserNumber = 40;
 
 const Step3: React.FC = (props) => {
-  const [users, _users] = useState(() => new Array(TestUsernumber).fill(null).map((v, i) => {
+  const [users, _users] = useState(() => new Array(UserNumber).fill(null).map((v, i) => {
     const minTime = new Date('1970-01-01').getTime();
     const maxTime = new Date('2000-01-01').getTime();
     const country_list = ['Philippines', 'USA', 'none', 'Japan'];
@@ -152,23 +152,6 @@ const Step3: React.FC = (props) => {
   return <MarkdownCpt md={`
     # example 3
     ### use create credential and circuits to create proofs and verify
-
-    |  ${table_th.join('  |  ')}  |
-    |${table_th.map(() => '---').join('|')}|
-    ${users.map((user, index) => {
-      // const timeStr = new Date(user.info.timeOfBirth).toISOString().replace(/T(.*)/, '');
-      const result = [
-        user.info.name,
-        new Date(user.info.timeOfBirth).toISOString().replace(/T(.*)/, ''),
-        user.info.country,
-        user.info.gender,
-        ...zkCircuits.map((v, i) => {
-          const res = String(user.verifyResult[i]);
-          return res === 'false' ? `\`${res}\`` : res;
-        })
-      ];
-      return `|${result.join('|')}|`;
-    }).join('\r')}
 
     \`\`\`ts
       import zkDID from 'zkDID';
@@ -269,9 +252,9 @@ const Step3: React.FC = (props) => {
         createCircuit(purpose, zkCircuit);
       });
 
-      const TestUsernumber = 40;
+      const UserNumber = 40;
 
-      const [users, _users] = useState(() => new Array(TestUsernumber).fill(null).map((v, i) => {
+      const users = new Array(UserNumber).fill(null).map((v, i) => {
         const minTime = new Date('1970-01-01').getTime();
         const maxTime = new Date('2000-01-01').getTime();
         const country_list = ['Philippines', 'USA', 'none', 'Japan'];
@@ -291,26 +274,36 @@ const Step3: React.FC = (props) => {
           kyc: new KYC_Credential(did, info),
           verifyResult: zkCircuits.map(() => null) as Array<null | boolean>
         }
-      }));
-      useEffect(() => {
-        users.forEach(async (user, index) => {
-          const did = user.kyc.getDID();
-          if (false === hasZKCredential(did, purpose)) createZKCredential(user.kyc);
-          const zkCred = getZKCredential(did, purpose);
-          zkCircuits.forEach(async (zkCircuit, vIndex) => {
-            const zkProof = await generateZKProof(zkCred, zkCircuit.toCode());
-            const res = verifyZKProof(zkProof, user.address, purpose);
-            _users(us => {
-              const u = users[index];
-              u.verifyResult[vIndex] = res;
-              u.verifyResult = [...u.verifyResult];
-              us[index] = {...u};
-              return [...us];
-            });
-          });
+      });
+      users.forEach(async (user, index) => {
+        const did = user.kyc.getDID();
+        if (false === hasZKCredential(did, purpose)) createZKCredential(user.kyc);
+        const zkCred = getZKCredential(did, purpose);
+        zkCircuits.forEach(async (zkCircuit, vIndex) => {
+          const zkProof = await generateZKProof(zkCred, zkCircuit.toCode());
+          const res = verifyZKProof(zkProof, user.address, purpose);
+          user.verifyResult[vIndex] = res;
         });
-      }, []);
+      });
+
     \`\`\`
+
+    |  ${table_th.join('  |  ')}  |
+    |${table_th.map(() => '---').join('|')}|
+    ${users.map((user, index) => {
+      // const timeStr = new Date(user.info.timeOfBirth).toISOString().replace(/T(.*)/, '');
+      const result = [
+        user.info.name,
+        new Date(user.info.timeOfBirth).toISOString().replace(/T(.*)/, ''),
+        user.info.country,
+        user.info.gender,
+        ...zkCircuits.map((v, i) => {
+          const res = String(user.verifyResult[i]);
+          return res === 'false' ? `\`${res}\`` : res;
+        })
+      ];
+      return `|${result.join('|')}|`;
+    }).join('\r')}
   `} />;
 }
 

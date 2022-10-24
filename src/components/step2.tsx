@@ -59,9 +59,9 @@ const KYC_Country_ASoutheast_Asia_v0001_range = [
 ];
 const KYC_Country_ASoutheast_Asia_v0001 = new ConstraintSTR_RNG('country', KYC_Country_ASoutheast_Asia_v0001_range);
 
-const TestUsernumber = 10;
+const UserNumber = 10;
 const Step2: React.FC = (props) => {
-  const [users] = useState(() => new Array(TestUsernumber).fill(null).map((v, i) => {
+  const [users] = useState(() => new Array(UserNumber).fill(null).map((v, i) => {
     const minTime = new Date('1851-01-01').getTime();
     const maxTime = new Date('2050-12-31').getTime();
     const country_list = ['Philippines', 'Myanmar', 'Thailand', 'Malaysia', 'Brunei', 'Singapore', 'USA', 'none', 'Japan', 'Germany'];
@@ -71,7 +71,7 @@ const Step2: React.FC = (props) => {
     const did = zkDID.did.getDID(address);
     const info = {
       timeOfBirth: randomNumber(minTime, maxTime),
-      name: `user-${(i+10).toString(36)}`,
+      name: `${(i+10).toString(36)}`,
       country: country_list[randomNumber(0, country_list.length)],
     };
     return {
@@ -80,9 +80,9 @@ const Step2: React.FC = (props) => {
       kyc: new KYC_Credential(did, info)
     }
   }));
-  const [verify, _verify] = useState<Array<null | boolean>>(() => new Array(TestUsernumber).fill(null));
+  const [verify, _verify] = useState<Array<null | boolean>>(() => new Array(UserNumber).fill(null));
   useEffect(() => {
-    _verify(new Array(TestUsernumber).fill(null));
+    _verify(new Array(UserNumber).fill(null));
     update();
   }, []);
 
@@ -107,21 +107,6 @@ const Step2: React.FC = (props) => {
   return <MarkdownCpt md={`
     # example 2
     ### use create credential and circuit to create proof and verify
-
-    |  address  | name  | timeOfBirth  | country  | verify  |
-    |----|----|----|----|----|
-    ${users.map((user, index) => {
-      const result = verify[index] === null ? 'loading...' : String(verify[index]);
-      const timeStr = new Date(user.info.timeOfBirth).toISOString().replace(/T(.*)/, '');
-      const timeMatch = user.info.timeOfBirth > KYC_Born_in_the_20th_century_min && user.info.timeOfBirth < KYC_Born_in_the_20th_century_max;
-      const countryMatch = KYC_Country_ASoutheast_Asia_v0001_range.includes(user.info.country);
-
-      const timeShow = timeMatch ? `${timeStr}` : `\`${timeStr}\``;
-      const countryShow = countryMatch ? `${user.info.country}` : `\`${user.info.country}\``;
-      const resultShow = result === 'false' ? `\`${result}\`` : result;
-
-      return `|  ${user.address}  | ${user.info.name}  | ${timeShow}  | ${countryShow}  | ${resultShow}  |`;
-    }).join('\r')}
 
     \`\`\`ts
       import zkDID from 'zkDID';
@@ -182,9 +167,9 @@ const Step2: React.FC = (props) => {
       ];
       const KYC_Country_ASoutheast_Asia_v0001 = new ConstraintSTR_RNG('country', KYC_Country_ASoutheast_Asia_v0001_range);
 
-      const TestUsernumber = 10;
+      const UserNumber = 10;
 
-      const [users] = useState(() => new Array(TestUsernumber).fill(null).map((v, i) => {
+      const users = new Array(UserNumber).fill(null).map((v, i) => {
         const minTime = new Date('1801-01-01').getTime();
         const maxTime = new Date('2100-12-31').getTime();
         const country_list = ['Philippines', 'Myanmar', 'Thailand', 'Malaysia', 'Brunei', 'Singapore', 'USA', 'none', 'Japan', 'Germany'];
@@ -202,7 +187,7 @@ const Step2: React.FC = (props) => {
           info,
           kyc: new KYC_Credential(did, info)
         }
-      }));
+      });
 
       // create circuit
       const purpose = KYC_Credential.purpose();
@@ -217,9 +202,25 @@ const Step2: React.FC = (props) => {
         const zkCred = getZKCredential(did, purpose);
         const zkProof = await generateZKProof(zkCred, code);
         const res = verifyZKProof(zkProof, user.address, purpose);
-        _verify(v => (v[index] = res, [...v]));
+        result[index] = res;
       });
+
     \`\`\`
+
+    | name  | timeOfBirth  | country  | result  |
+    |----|----|----|----|
+    ${users.map((user, index) => {
+      const result = verify[index] === null ? 'loading...' : String(verify[index]);
+      const timeStr = new Date(user.info.timeOfBirth).toISOString().replace(/T(.*)/, '');
+      const timeMatch = user.info.timeOfBirth > KYC_Born_in_the_20th_century_min && user.info.timeOfBirth < KYC_Born_in_the_20th_century_max;
+      const countryMatch = KYC_Country_ASoutheast_Asia_v0001_range.includes(user.info.country);
+
+      const timeShow = timeMatch ? `${timeStr}` : `\`${timeStr}\``;
+      const countryShow = countryMatch ? `${user.info.country}` : `\`${user.info.country}\``;
+      const resultShow = result === 'false' ? `\`${result}\`` : result;
+
+      return `| ${user.info.name}  | ${timeShow}  | ${countryShow}  | ${resultShow}  |`;
+    }).join('\r')}
   `} />;
 }
 

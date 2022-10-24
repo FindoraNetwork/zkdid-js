@@ -43,35 +43,27 @@ const Step1: React.FC = () => {
       import zkDID from 'zkDID';
       import ethers from 'ethers';
 
-      const Component: React.FC = () => {
-        const [address] = useState(() => ethers.Wallet.createRandom().address);
-        const [did, _did] = useState(() => {
-          const has = zkDID.did.hasDID(address);
-          if (!has) zkDID.did.createDID(address);
-          return zkDID.did.getDID(address);
-        });
-        const [verifyZKProofRes, _verifyZKProofRes] = useState<boolean | null>(null);
+      const address = ethers.Wallet.createRandom().address;
+      const did = (() => {
+        const has = zkDID.did.hasDID(address);
+        if (!has) zkDID.did.createDID(address);
+        return zkDID.did.getDID(address);
+      })();
+      const gpa40 = new zkDID.credential.GPACredential(did, 4.0);
+      const purpose = zkDID.credential.GPACredential.purpose();
+      const zkCircuit = new zkDID.circuit.ZKCircuit([zkDID.constraints.CONSTRAINT_GPA_35]);
 
-        useEffect(() => {
-          _verifyZKProofRes(null);
-          update();
-        }, [did]);
+      async function verify() {
+        const code = zkCircuit.toCode();
+        // const circuit = getCircuit(purpose, code);
 
-        async function update() {
-          const purpose = zkDID.credential.GPACredential.purpose();
-          const zkCircuit = new zkDID.circuit.ZKCircuit([zkDID.constraints.CONSTRAINT_GPA_35]);
-          const code = zkCircuit.toCode();
-          // const circuit = getCircuit(purpose, code);
-          const gpa40 = new zkDID.credential.GPACredential(did, 4.0);
-
-          if (false === zkDID.credential.hasZKCredential(did, purpose)) zkDID.credential.createZKCredential(gpa40);
-          const zkCred = zkDID.credential.getZKCredential(did, purpose);
-          const zkProof = await zkDID.zkproof.generateZKProof(zkCred, code);
-          const res = zkDID.zkproof.verifyZKProof(zkProof, address, purpose);
-          _verifyZKProofRes(res);
-          // res: ${verifyZKProofRes}
-        }
-      });
+        if (false === zkDID.credential.hasZKCredential(did, purpose)) zkDID.credential.createZKCredential(gpa40);
+        const zkCred = zkDID.credential.getZKCredential(did, purpose);
+        const zkProof = await zkDID.zkproof.generateZKProof(zkCred, code);
+        const res = zkDID.zkproof.verifyZKProof(zkProof, address, purpose);
+        // res: ${verifyZKProofRes}
+      }
+      verify();
     \`\`\`
   `} />;
 }

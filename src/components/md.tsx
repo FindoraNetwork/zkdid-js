@@ -19,7 +19,9 @@ const MarkdownCpt: React.FC<{ md: string; }> = (props) => {
     el.current.innerHTML = MD.render(last);
   }, [last]);
 
-  return <div ref={el}></div>;
+  return <div ref={el}>
+    <div className="loading">loading...</div>
+  </div>;
 }
 
 export default MarkdownCpt;
