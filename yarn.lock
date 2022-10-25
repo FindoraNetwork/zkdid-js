@@ -2314,6 +2314,11 @@
     "@types/linkify-it" "*"
     "@types/mdurl" "*"
 
+"@types/marked@^4.0.7":
+  version "4.0.7"
+  resolved "https://registry.npmmirror.com/@types/marked/-/marked-4.0.7.tgz#400a76809fd08c2bbd9e25f3be06ea38c8e0a1d3"
+  integrity sha512-eEAhnz21CwvKVW+YvRvcTuFKNU9CV1qH+opcgVK3pIMI6YZzDm6gc8o2vHjldFk6MGKt5pueSB7IOpvpx5Qekw==
+
 "@types/mdast@^3.0.0":
   version "3.0.10"
   resolved "https://registry.npmmirror.com/@types/mdast/-/mdast-3.0.10.tgz#4724244a82a4598884cbbe9bcfd73dff927ee8af"
@@ -8766,6 +8771,11 @@ markdown-table@^1.1.0:
   version "1.1.3"
   resolved "https://registry.npmmirror.com/markdown-table/-/markdown-table-1.1.3.tgz#9fcb69bcfdb8717bfd0398c6ec2d93036ef8de60"
   integrity sha512-1RUZVgQlpJSPWYbFSpmudq5nHY1doEIv89gBtF0s4gW1GF2XorxcA/70M5vq7rLv0a6mhOUccRsqkwhwLCIQ2Q==
+
+marked@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.npmmirror.com/marked/-/marked-4.1.1.tgz#2f709a4462abf65a283f2453dc1c42ab177d302e"
+  integrity sha512-0cNMnTcUJPxbA6uWmCmjWz4NJRe/0Xfk2NhXCUHjew9qJzFN20krFnsUe7QynwqOwa5m1fZ4UDg0ycKFVC0ccw==
 
 mathml-tag-names@^2.0.1, mathml-tag-names@^2.1.3:
   version "2.1.3"
