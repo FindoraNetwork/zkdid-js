@@ -1,5 +1,19 @@
 import { getContentByKey, setContentByKey } from './lib/cache';
-import { IConstraint, CONSTRAINTS_GPA, CONSTRAINTS_CREDITS, CONSTRAINTS_INCOME, getKeyOfConstraint, getConstraintByKey } from './constraints';
+import {
+  IConstraint,
+  CONSTRAINTS_GPA,
+  CONSTRAINTS_CREDITS,
+  CONSTRAINTS_INCOME,
+  CONSTRAINT_GPA_30,
+  CONSTRAINT_GPA_35,
+  CONSTRAINT_CREDIT_650,
+  CONSTRAINT_CREDIT_700,
+  CONSTRAINT_INCOME_65K,
+  CONSTRAINT_INCOME_80K,
+  CONSTRAINT_INCOME_95K,
+  getKeyOfConstraint,
+  getConstraintByKey,
+} from './constraints';
 import { stringKeccak256 } from './lib/tool';
 import { CacheType } from './types';
 import { AnnualIncomeCredential, CreditScoreCredential, GPACredential } from './credential';
@@ -90,6 +104,15 @@ export const createCircuit = (purpose: string, circuit: ZKCircuit): void => {
   setContentByKey(CacheType.CIRCUIT, key, circuit.toBytes());
 };
 
+// Publish predefined circuit codes
+export const CODE_GPA_30 = new ZKCircuit([CONSTRAINT_GPA_30]).toCode();
+export const CODE_GPA_35 = new ZKCircuit([CONSTRAINT_GPA_35]).toCode();
+export const CODE_CREDIT_650 = new ZKCircuit([CONSTRAINT_CREDIT_650]).toCode();
+export const CODE_CREDIT_700 = new ZKCircuit([CONSTRAINT_CREDIT_700]).toCode();
+export const CODE_INCOME_65K = new ZKCircuit([CONSTRAINT_INCOME_65K]).toCode();
+export const CODE_INCOME_80K = new ZKCircuit([CONSTRAINT_INCOME_80K]).toCode();
+export const CODE_INCOME_95K = new ZKCircuit([CONSTRAINT_INCOME_95K]).toCode();
+
 // Create predefined circuits for GPA
 for (const constraint of CONSTRAINTS_GPA) {
   const purpose = GPACredential.purpose();
@@ -109,7 +132,7 @@ for (const constraint of CONSTRAINTS_CREDITS) {
 }
 
 // Create predefined circuits for income
-for (const constraint of CONSTRAINTS_CREDITS) {
+for (const constraint of CONSTRAINTS_INCOME) {
   const purpose = AnnualIncomeCredential.purpose();
   const circuit = new ZKCircuit([constraint]);
   if (!hasCircuit(purpose, circuit.toCode())) {
