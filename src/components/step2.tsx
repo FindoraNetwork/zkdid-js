@@ -12,7 +12,7 @@ import { createCircuit, hasCircuit, ZKCircuit } from "_src/zkDID/circuit";
 import { generateZKProof, verifyZKProof } from "_src/zkDID/zkproof";
 
 interface KYC_Info {
-  timeOfBirth: number;
+  dateOfBirth: number;
   name: string;
   country: string;
 }
@@ -41,7 +41,7 @@ class KYC_Credential extends ICredential {
   getEncrypted(): string {
     const ObjectOfthis = {
       did: this.getDID(),
-      timeOfBirth: this.info.timeOfBirth,
+      dateOfBirth: this.info.dateOfBirth,
       name: this.info.name,
       country: this.info.country
     };
@@ -50,7 +50,7 @@ class KYC_Credential extends ICredential {
 }
 const KYC_Born_in_the_20th_century_min = new Date('1901-01-01').getTime();
 const KYC_Born_in_the_20th_century_max = new Date('2000-12-31').getTime();
-const KYC_Born_in_the_20th_century = new ConstraintINT_RNG('timeOfBirth', KYC_Born_in_the_20th_century_min, KYC_Born_in_the_20th_century_max);
+const KYC_Born_in_the_20th_century = new ConstraintINT_RNG('dateOfBirth', KYC_Born_in_the_20th_century_min, KYC_Born_in_the_20th_century_max);
 
 const KYC_Country_ASoutheast_Asia_v0001_range = [
   'Philippines', 'Vietnam', 'Laos', 'Cambodia', 'Myanmar',
@@ -63,8 +63,8 @@ const UserNumber = 10;
 const Step2: React.FC = (props) => {
   console.log('step2');
   const [users] = useState(() => new Array(UserNumber).fill(null).map((v, i) => {
-    const minTime = new Date('1851-01-01').getTime();
-    const maxTime = new Date('2050-12-31').getTime();
+    const minDOB = new Date('1851-01-01').getTime();
+    const maxDOB = new Date('2050-12-31').getTime();
     const country_list = ['Philippines', 'Myanmar', 'Thailand', 'Malaysia', 'Brunei', 'Singapore', 'USA', 'none', 'Japan', 'Germany'];
 
     // const address = ethers.Wallet.createRandom().address;
@@ -73,7 +73,7 @@ const Step2: React.FC = (props) => {
     if (false === zkDID.did.hasDID(address)) zkDID.did.createDID(address);
     const did = zkDID.did.getDID(address);
     const info = {
-      timeOfBirth: randomNumber(minTime, maxTime),
+      dateOfBirth: randomNumber(minDOB, maxDOB),
       name: `${(i+10).toString(36)}`,
       country: country_list[randomNumber(0, country_list.length)],
     };
@@ -110,7 +110,7 @@ const Step2: React.FC = (props) => {
   return (
     <MarkdownCpt md={`
       # example 2
-      ### use create credential and circuit to create proof and verify
+      ### Use custom credential and circuit to create proof and verify
 
       \`\`\`ts
         import zkDID from 'zkDID';
@@ -124,10 +124,12 @@ const Step2: React.FC = (props) => {
         import { generateZKProof, verifyZKProof } from "zkDID/zkproof";
 
         interface KYC_Info {
-          timeOfBirth: number;
+          dateOfBirth: number;
           name: string;
           country: string;
         }
+
+        // A custom credential for KYC
         class KYC_Credential extends ICredential {
           private info: KYC_Info
 
@@ -136,7 +138,7 @@ const Step2: React.FC = (props) => {
             this.info = info;
           }
           static issuer(): string {
-            return 'my credential';
+            return 'my.credential.org';
           }
           static purpose(): string {
             return stringKeccak256(\`\${this.issuer()}.kyc-info\`);
@@ -153,17 +155,21 @@ const Step2: React.FC = (props) => {
           getEncrypted(): string {
             const ObjectOfthis = {
               did: this.getDID(),
-              timeOfBirth: this.info.timeOfBirth,
+              dateOfBirth: this.info.dateOfBirth,
               name: this.info.name,
               country: this.info.country
             };
+            // Base64 encoding is now REQUIRED to make proof verification working
             return Base64.encode(JSON.stringify(ObjectOfthis));
           }
         }
+
+        // Credential issuer defines a constraint for DOB check
         const KYC_Born_in_the_20th_century_min = new Date('1901-01-01').getTime();
         const KYC_Born_in_the_20th_century_max = new Date('2000-12-31').getTime();
-        const KYC_Born_in_the_20th_century = new ConstraintINT_RNG('timeOfBirth', KYC_Born_in_the_20th_century_min, KYC_Born_in_the_20th_century_max);
+        const KYC_Born_in_the_20th_century = new ConstraintINT_RNG('dateOfBirth', KYC_Born_in_the_20th_century_min, KYC_Born_in_the_20th_century_max);
 
+        // Credential issuer defines a constraint for Southeast Asia country check
         const KYC_Country_ASoutheast_Asia_v0001_range = [
           'Philippines', 'Vietnam', 'Laos', 'Cambodia', 'Myanmar',
           'Thailand', 'Malaysia', 'Brunei', 'Singapore', 'Indonesia',
@@ -171,21 +177,35 @@ const Step2: React.FC = (props) => {
         ];
         const KYC_Country_ASoutheast_Asia_v0001 = new ConstraintSTR_RNG('country', KYC_Country_ASoutheast_Asia_v0001_range);
 
+        // Credential issuer creates a circuit (and publishes its code) based on above constraints
+        const purpose = KYC_Credential.purpose();
+        const zkCircuit = new ZKCircuit([KYC_Born_in_the_20th_century, KYC_Country_ASoutheast_Asia_v0001]);
+        const CIRCUIT_CODE_OF_KYC_EXAMPLE = zkCircuit.toCode();
+        if (false === hasCircuit(purpose, zkCircuit.toCode())) createCircuit(purpose, zkCircuit);
+
+        // Generates 10 example users and their KYC credentials (with random DOB, name and country) for testing
         const UserNumber = 10;
-
         const users = new Array(UserNumber).fill(null).map((v, i) => {
-          const minTime = new Date('1801-01-01').getTime();
-          const maxTime = new Date('2100-12-31').getTime();
-          const country_list = ['Philippines', 'Myanmar', 'Thailand', 'Malaysia', 'Brunei', 'Singapore', 'USA', 'none', 'Japan', 'Germany'];
-
+          // Generates ETH address
           const address = ethers.Wallet.createRandom().address;
+
+          // Identity issuer creates an did and assign it to the user
           if (false === zkDID.did.hasDID(address)) zkDID.did.createDID(address);
           const did = zkDID.did.getDID(address);
+
+          // Defines range of DOB and countries to generate random user information
+          const minDOB = new Date('1801-01-01').getTime();
+          const maxDOB = new Date('2022-11-04').getTime();
+          const country_list = ['Philippines', 'Myanmar', 'Thailand', 'Malaysia', 'Brunei', 'Singapore', 'USA', 'UK', 'Japan', 'Germany'];
+
+          // Generates a random user information
           const info = {
-            timeOfBirth: randomNumber(minTime, maxTime),
+            dateOfBirth: randomNumber(minDOB, maxDOB),
             name: \`\${(i+10).toString(36)}\`,
             country: country_list[randomNumber(0, country_list.length)],
           };
+
+          // KYC credential issuer issues a KYC credential to each user
           return {
             address,
             info,
@@ -193,30 +213,37 @@ const Step2: React.FC = (props) => {
           }
         });
 
-        // create circuit
-        const purpose = KYC_Credential.purpose();
-        const zkCircuit = new ZKCircuit([KYC_Born_in_the_20th_century, KYC_Country_ASoutheast_Asia_v0001]);
-        const code = zkCircuit.toCode();
-        if (false === hasCircuit(purpose, zkCircuit.toCode())) createCircuit(purpose, zkCircuit);
-        // const circuit = getCircuit(purpose, zkCircuit.toCode());
-
+        // KYC credential issuer issues a ZK credential (based on their KYC credential) to each user
         users.forEach(async (user, index) => {
           const did = user.kyc.getDID();
           if (false === hasZKCredential(did, purpose)) createZKCredential(user.kyc);
+        });
+
+        // Verification on each example user
+        users.forEach(async (user, index) => {
+          // User holds his/her ZK credential on hand (The real-world ZK credential can be stored offline or on IPFS).
+          const did = user.kyc.getDID();
           const zkCred = getZKCredential(did, purpose);
-          const zkProof = await generateZKProof(zkCred, code);
+
+          // User goes to verifier's (who needs to check the ZK credential) website and generates a ZKProof based on a circuit (specified by verifier)
+          const zkProof = await generateZKProof(zkCred, CIRCUIT_CODE_OF_KYC_EXAMPLE);
+
+          // Verifier checks the ZKProof to see if the user is qualified (born in 20th century AND live in Southeast Asia)
+          // Note: \`zkProof\` probably doesn't know its owner at all. It would be better if DApp uses zkDID.zkproof.verifySignedZKProof to verify the ownership of the \`zkProof\`.
           const res = verifyZKProof(zkProof, user.address, purpose);
+
+          // The verification result
           result[index] = res;
         });
 
       \`\`\`
 
-      | name  | timeOfBirth  | country  | result  |
+      | name  | dateOfBirth  | country  | result  |
       |----|----|----|----|
       ${users.map((user, index) => {
         const result = verify[index] === null ? 'loading...' : String(verify[index]);
-        const timeStr = new Date(user.info.timeOfBirth).toISOString().replace(/T(.*)/, '');
-        const timeMatch = user.info.timeOfBirth > KYC_Born_in_the_20th_century_min && user.info.timeOfBirth < KYC_Born_in_the_20th_century_max;
+        const timeStr = new Date(user.info.dateOfBirth).toISOString().replace(/T(.*)/, '');
+        const timeMatch = user.info.dateOfBirth > KYC_Born_in_the_20th_century_min && user.info.dateOfBirth < KYC_Born_in_the_20th_century_max;
         const countryMatch = KYC_Country_ASoutheast_Asia_v0001_range.includes(user.info.country);
 
         const timeShow = timeMatch ? `${timeStr}` : `\`${timeStr}\``;
