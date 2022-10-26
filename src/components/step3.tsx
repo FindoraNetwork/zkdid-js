@@ -93,7 +93,7 @@ const Step3: React.FC = (props) => {
   const [users, _users] = useState(() => new Array(UserNumber).fill(null).map((v, i) => {
     const minDOB = new Date('1970-01-01').getTime();
     const maxDOB = new Date('2000-01-01').getTime();
-    const country_list = ['Philippines', 'USA', 'none', 'Japan'];
+    const country_list = ['Philippines', 'USA', 'UK', 'Japan'];
     const address = new ethers.Wallet(ethers.utils.randomBytes(32)).address;
     if (false === zkDID.did.hasDID(address)) zkDID.did.createDID(address);
     const did = zkDID.did.getDID(address);
