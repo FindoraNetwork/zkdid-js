@@ -1,7 +1,5 @@
 // ZK constraints
 
-// Contraint interface
-
 export const Constraints: Class<any>[] = [];
 
 interface Class<T> {

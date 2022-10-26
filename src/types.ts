@@ -6,7 +6,6 @@ export interface DID {
 
 export enum CacheType {
   DID = 'did',
-  // CIRCUIT = 'circuit',
   CIRCUIT = 'circuit',
   ZKCredential = 'zkCred',
 }

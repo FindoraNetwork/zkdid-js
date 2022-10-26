@@ -47,10 +47,6 @@ export class ZKCircuit {
   }
   verify(fields: Map<string, number | string>): boolean {
     // verify `fields` against every contrait
-
-    // Implementation:
-    //
-    // Example:
     for (let i = 0; i < this.constraints.length; i++) {
       const field = this.constraints[i].getField();
       const value = fields.get(field);
@@ -64,7 +60,7 @@ const circuitPath = (purpose: string, code: string): string => {
   return [purpose, code].join(':');
 };
 
-// APIs to extend circuit family
+// APIs to build/fetch ZK circuit
 
 /**
  * @param purpose - The purpose code
