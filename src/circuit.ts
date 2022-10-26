@@ -132,7 +132,7 @@ for (const constraint of CONSTRAINTS_CREDITS) {
 }
 
 // Create predefined circuits for income
-for (const constraint of CONSTRAINTS_CREDITS) {
+for (const constraint of CONSTRAINTS_INCOME) {
   const purpose = AnnualIncomeCredential.purpose();
   const circuit = new ZKCircuit([constraint]);
   if (!hasCircuit(purpose, circuit.toCode())) {
