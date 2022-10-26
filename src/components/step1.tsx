@@ -17,14 +17,11 @@ const Step1: React.FC = () => {
 
   async function update() {
     const purpose = zkDID.credential.GPACredential.purpose();
-    const zkCircuit = new zkDID.circuit.ZKCircuit([zkDID.constraints.CONSTRAINT_GPA_35]);
-    const code = zkCircuit.toCode();
-    // const circuit = getCircuit(purpose, code);
     const gpa40 = new zkDID.credential.GPACredential(did, 4.0);
 
     if (false === zkDID.credential.hasZKCredential(did, purpose)) zkDID.credential.createZKCredential(gpa40);
     const zkCred = zkDID.credential.getZKCredential(did, purpose);
-    const zkProof = await zkDID.zkproof.generateZKProof(zkCred, code);
+    const zkProof = await zkDID.zkproof.generateZKProof(zkCred, zkDID.circuit.CODE_GPA_35);
     const res = zkDID.zkproof.verifyZKProof(zkProof, address, purpose);
     console.log('example 1, verifyZKProof:', res);
   }
