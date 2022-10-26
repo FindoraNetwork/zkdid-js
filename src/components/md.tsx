@@ -3,6 +3,7 @@ import { MD } from "_src/utils/markdown";
 
 const MarkdownCpt: React.FC<{ md: string; }> = (props) => {
   const el = useRef<HTMLDivElement>(null);
+  console.log('MarkdownCpt render');
 
   useEffect(() => {
     if (!el.current) return;
@@ -15,6 +16,7 @@ const MarkdownCpt: React.FC<{ md: string; }> = (props) => {
       minPad = Math.min(minPad, match[0].length);
     });
     const last = realMd.map(v => v.replace(new RegExp(`^( ){${minPad}}`), '')).join('\n');
+    console.log('md render');
     el.current.innerHTML = MD.render(last);
   }, [props.md]);
 

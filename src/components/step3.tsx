@@ -89,6 +89,7 @@ zkCircuits.forEach(zkCircuit => {
 const UserNumber = 40;
 
 const Step3: React.FC = (props) => {
+  console.log('step3');
   const [users, _users] = useState(() => new Array(UserNumber).fill(null).map((v, i) => {
     const minTime = new Date('1970-01-01').getTime();
     const maxTime = new Date('2000-01-01').getTime();
@@ -125,7 +126,7 @@ const Step3: React.FC = (props) => {
         });
       });
     });
-  });
+  }, []);
   const table_th = [
     'name', 'timeOfBirth', 'country',
     '1990_2000<br/>Philippines',

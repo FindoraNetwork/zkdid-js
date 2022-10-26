@@ -4,6 +4,7 @@ import * as ethers from 'ethers';
 import MarkdownCpt from "./md";
 
 const Step1: React.FC = () => {
+  console.log('step1');
   const [address] = useState(() => ethers.Wallet.createRandom().address);
   const [did, _did] = useState(() => {
     const has = zkDID.did.hasDID(address);

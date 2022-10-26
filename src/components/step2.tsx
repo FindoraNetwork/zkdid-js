@@ -61,6 +61,7 @@ const KYC_Country_ASoutheast_Asia_v0001 = new ConstraintSTR_RNG('country', KYC_C
 
 const UserNumber = 10;
 const Step2: React.FC = (props) => {
+  console.log('step2');
   const [users] = useState(() => new Array(UserNumber).fill(null).map((v, i) => {
     const minTime = new Date('1851-01-01').getTime();
     const maxTime = new Date('2050-12-31').getTime();
