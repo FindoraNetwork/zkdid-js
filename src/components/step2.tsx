@@ -65,7 +65,7 @@ const Step2: React.FC = (props) => {
   const [users] = useState(() => new Array(UserNumber).fill(null).map((v, i) => {
     const minDOB = new Date('1851-01-01').getTime();
     const maxDOB = new Date('2050-12-31').getTime();
-    const country_list = ['Philippines', 'Myanmar', 'Thailand', 'Malaysia', 'Brunei', 'Singapore', 'USA', 'none', 'Japan', 'Germany'];
+    const country_list = ['Philippines', 'Myanmar', 'Thailand', 'Malaysia', 'Brunei', 'Singapore', 'USA', 'UK', 'Japan', 'Germany'];
 
     // const address = ethers.Wallet.createRandom().address;
     const address = new ethers.Wallet(ethers.utils.randomBytes(32)).address;
