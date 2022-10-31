@@ -2,16 +2,11 @@ import { getContentByKey, setContentByKey } from './lib/cache';
 import DIDKit from '@spruceid/didkit-wasm';
 import { address, CacheType, DID } from './types';
 
-// DID interfaces ///////////////////////////////////////////////////////////////////////////////////////////
-
 /**
  * @param address - Metamask address
  * @returns `true` if `address` has an DID or `false` otherwise
  */
 export const hasDID = (address: address): boolean => {
-  // Implementation
-  // 1> Check existence of DID in localStorage
-
   const did = getContentByKey(CacheType.DID, address);
   if (!did) return false;
   return true;
@@ -23,11 +18,6 @@ export const hasDID = (address: address): boolean => {
  * @throws Error if DID doesn't exist
  */
 export const getDID = (address: address): DID => {
-  // if (!hasDID(address)) throw Error("DID doesn't exist");
-
-  // Implementation
-  // 1> Get DID from localStorage
-
   const did = getContentByKey(CacheType.DID, address);
   if (!did) throw Error("DID doesn't exist");
   return did;
@@ -42,12 +32,6 @@ export const getDID = (address: address): DID => {
  */
 export const createDID = (address: string): DID => {
   if (hasDID(address)) throw Error('DID already exists');
-
-  // Implementation
-  // 1> Create and save DID in localStorage
-  // 2> Use SpruceID (https://www.npmjs.com/package/@spruceid/didkit-wasm) API to generate DID.
-  //    Here is a 5-line of example: https://www.spruceid.dev/didkit/didkit-packages/javascript
-  // 3> Assign/link newly created DID to `address`
 
   const key = DIDKit.generateEd25519Key();
   const did = { id: DIDKit.keyToDID('key', key) };

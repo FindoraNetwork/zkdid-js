@@ -4,7 +4,7 @@ import Constants from './lib/constants';
 import { CacheType, DID } from './types';
 import { stringKeccak256 } from './lib/tool';
 
-// Credential interfaces
+// Credential interface
 export abstract class ICredential {
   private did: DID;
   constructor(did: DID) {
@@ -34,8 +34,6 @@ export interface ZKCredential {
  * @returns `true` if `did` already links to a ZKCredential or `false` otherwise
  */
 export const hasZKCredential = (did: DID, purpose: string): boolean => {
-  // Implementation
-  // 1> Check existence of ZKCredential in localStorage by key [did + purpose] (e.g., 'did:key:z6MksFwai2iBGRQdai5KSFP9FsPvZPnYY2FshK2mJ7nrYwZx:7fed71c88753dc82cd80d84e6f28c588d4c15b88').
   const key = `${did.id}:${purpose}`;
   const zkCred = getContentByKey(CacheType.ZKCredential, key);
   if (!zkCred) return false;
@@ -49,8 +47,6 @@ export const hasZKCredential = (did: DID, purpose: string): boolean => {
  * @throws Error if ZKCredential doesn't exist
  */
 export const getZKCredential = (did: DID, purpose: string): ZKCredential => {
-  // Implementation
-  // 1> Get ZKCredential from localStorage by key (same key as above)
   const key = `${did.id}:${purpose}`;
   const credStr = getContentByKey(CacheType.ZKCredential, key);
   if (!credStr) throw Error("ZKCredential doesn't exist");
@@ -65,26 +61,13 @@ export const getZKCredential = (did: DID, purpose: string): ZKCredential => {
  * @returns The ZKCredential instance
  */
 export const createZKCredential = (cred: ICredential): ZKCredential => {
-  // Implementation
+  // Real-world notes:
+  // 1> Encryption could be done by user's encryption key (from Metamask account).
   //
-  // 1> Get encrypted credential (a Base64 string) by `cred.getEncrypted()`.
-  //    Real-world encryption could be done by user's encryption key (from Metamask account).
-  //
-  // 2> Save below ZKCredential into localStorage (as string) under a proper key (e.g., did:key:z6MksFwai2iBGRQdai5KSFP9FsPvZPnYY2FshK2mJ7nrYwZx:7fed71c88753dc82cd80d84e6f28c588d4c15b88)
-  //    A real-world `did` may own multiple ZK credentials (CreditScoreCredential, GPACredential, ResidentCredential, etc.) represented by on-chain NFTs.
+  // 2> A `did` may own multiple ZK credentials (CreditScoreCredential, GPACredential, ResidentCredential, etc.) represented by on-chain NFTs.
   //    If stored as an NFT, the key may look like: "0x7fed71c88753dc82cd80d84e6f28c588d4c15b88:16" and the NFT's metadata may points to the encrypted credential on IPFS.
-  /*
-        const zkCred: ZKCredential =
-        {
-          did,
-          purpose: cred.getPurpose(),
-          credential: cred.getEncrypted(),
-          commitment: cred.getCommitment(),
-        };
-  */
-
-  // 3> The `commitment` field (in above ZKCredential) can just simply be a Hash (sha256) of `cred` (underlying credential object).
-  //    Real-world commitment is usually published/stored, by ZKCredential issuer, in a smart contract on blockchain.
+  //
+  // 3> A commitment is usually published/stored, by ZKCredential issuer, in a smart contract on blockchain.
 
   const did = cred.getDID();
   const key = `${did.id}:${cred.getPurpose()}`;
@@ -155,7 +138,6 @@ export class CreditScoreCredential extends ICredential {
     return CreditScoreCredential.purpose();
   }
   getEncrypted(): string {
-    // Implementation
     // Encrypt self into a Base64 string.
     const ObjectOfthis = {
       did: this.getDID(),
@@ -188,7 +170,6 @@ export class AnnualIncomeCredential extends ICredential {
     return AnnualIncomeCredential.purpose();
   }
   getEncrypted(): string {
-    // Implementation
     // Encrypt self into a Base64 string.
     const ObjectOfthis = {
       did: this.getDID(),
