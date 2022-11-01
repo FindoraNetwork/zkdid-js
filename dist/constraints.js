@@ -2,7 +2,6 @@
 // ZK constraints
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CONSTRAINTS_INCOME = exports.CONSTRAINTS_CREDITS = exports.CONSTRAINTS_GPA = exports.CONSTRAINT_INCOME_95K = exports.CONSTRAINT_INCOME_80K = exports.CONSTRAINT_INCOME_65K = exports.CONSTRAINT_CREDIT_700 = exports.CONSTRAINT_CREDIT_650 = exports.CONSTRAINT_GPA_35 = exports.CONSTRAINT_GPA_30 = exports.ConstraintSTR_RNG = exports.ConstraintINT_RNG = exports.getConstraintByKey = exports.getKeyOfConstraint = exports.registerConstraint = exports.IConstraint = exports.Constraints = void 0;
-// Contraint interface
 exports.Constraints = [];
 class IConstraint {
     constructor(field) {

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createCircuit = exports.getCircuit = exports.hasCircuit = exports.ZKCircuit = void 0;
+exports.CODE_INCOME_95K = exports.CODE_INCOME_80K = exports.CODE_INCOME_65K = exports.CODE_CREDIT_700 = exports.CODE_CREDIT_650 = exports.CODE_GPA_35 = exports.CODE_GPA_30 = exports.createCircuit = exports.getCircuit = exports.hasCircuit = exports.ZKCircuit = void 0;
 const cache_1 = require("./lib/cache");
 const constraints_1 = require("./constraints");
 const tool_1 = require("./lib/tool");
@@ -35,9 +35,6 @@ class ZKCircuit {
     }
     verify(fields) {
         // verify `fields` against every contrait
-        // Implementation:
-        //
-        // Example:
         for (let i = 0; i < this.constraints.length; i++) {
             const field = this.constraints[i].getField();
             const value = fields.get(field);
@@ -51,7 +48,7 @@ exports.ZKCircuit = ZKCircuit;
 const circuitPath = (purpose, code) => {
     return [purpose, code].join(':');
 };
-// APIs to extend circuit family
+// APIs to build/fetch ZK circuit
 /**
  * @param purpose - The purpose code
  * @param code - The circuit code
@@ -93,6 +90,14 @@ const createCircuit = (purpose, circuit) => {
     (0, cache_1.setContentByKey)(types_1.CacheType.CIRCUIT, key, circuit.toBytes());
 };
 exports.createCircuit = createCircuit;
+// Publish predefined circuit codes
+exports.CODE_GPA_30 = new ZKCircuit([constraints_1.CONSTRAINT_GPA_30]).toCode();
+exports.CODE_GPA_35 = new ZKCircuit([constraints_1.CONSTRAINT_GPA_35]).toCode();
+exports.CODE_CREDIT_650 = new ZKCircuit([constraints_1.CONSTRAINT_CREDIT_650]).toCode();
+exports.CODE_CREDIT_700 = new ZKCircuit([constraints_1.CONSTRAINT_CREDIT_700]).toCode();
+exports.CODE_INCOME_65K = new ZKCircuit([constraints_1.CONSTRAINT_INCOME_65K]).toCode();
+exports.CODE_INCOME_80K = new ZKCircuit([constraints_1.CONSTRAINT_INCOME_80K]).toCode();
+exports.CODE_INCOME_95K = new ZKCircuit([constraints_1.CONSTRAINT_INCOME_95K]).toCode();
 // Create predefined circuits for GPA
 for (const constraint of constraints_1.CONSTRAINTS_GPA) {
     const purpose = credential_1.GPACredential.purpose();
@@ -110,7 +115,7 @@ for (const constraint of constraints_1.CONSTRAINTS_CREDITS) {
     }
 }
 // Create predefined circuits for income
-for (const constraint of constraints_1.CONSTRAINTS_CREDITS) {
+for (const constraint of constraints_1.CONSTRAINTS_INCOME) {
     const purpose = credential_1.AnnualIncomeCredential.purpose();
     const circuit = new ZKCircuit([constraint]);
     if (!(0, exports.hasCircuit)(purpose, circuit.toCode())) {

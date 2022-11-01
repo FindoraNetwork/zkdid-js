@@ -28,3 +28,10 @@ export declare const getCircuit: (purpose: string, code: string) => ZKCircuit;
  * @throws Error if circuit already exists
  */
 export declare const createCircuit: (purpose: string, circuit: ZKCircuit) => void;
+export declare const CODE_GPA_30: string;
+export declare const CODE_GPA_35: string;
+export declare const CODE_CREDIT_650: string;
+export declare const CODE_CREDIT_700: string;
+export declare const CODE_INCOME_65K: string;
+export declare const CODE_INCOME_80K: string;
+export declare const CODE_INCOME_95K: string;

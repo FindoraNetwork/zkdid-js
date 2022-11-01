@@ -101,13 +101,13 @@ export const createCircuit = (purpose: string, circuit: ZKCircuit): void => {
 };
 
 // Publish predefined circuit codes
-const CODE_GPA_30 = new ZKCircuit([CONSTRAINT_GPA_30]).toCode();
-const CODE_GPA_35 = new ZKCircuit([CONSTRAINT_GPA_35]).toCode();
-const CODE_CREDIT_650 = new ZKCircuit([CONSTRAINT_CREDIT_650]).toCode();
-const CODE_CREDIT_700 = new ZKCircuit([CONSTRAINT_CREDIT_700]).toCode();
-const CODE_INCOME_65K = new ZKCircuit([CONSTRAINT_INCOME_65K]).toCode();
-const CODE_INCOME_80K = new ZKCircuit([CONSTRAINT_INCOME_80K]).toCode();
-const CODE_INCOME_95K = new ZKCircuit([CONSTRAINT_INCOME_95K]).toCode();
+export const CODE_GPA_30 = new ZKCircuit([CONSTRAINT_GPA_30]).toCode();
+export const CODE_GPA_35 = new ZKCircuit([CONSTRAINT_GPA_35]).toCode();
+export const CODE_CREDIT_650 = new ZKCircuit([CONSTRAINT_CREDIT_650]).toCode();
+export const CODE_CREDIT_700 = new ZKCircuit([CONSTRAINT_CREDIT_700]).toCode();
+export const CODE_INCOME_65K = new ZKCircuit([CONSTRAINT_INCOME_65K]).toCode();
+export const CODE_INCOME_80K = new ZKCircuit([CONSTRAINT_INCOME_80K]).toCode();
+export const CODE_INCOME_95K = new ZKCircuit([CONSTRAINT_INCOME_95K]).toCode();
 
 // Create predefined circuits for GPA
 for (const constraint of CONSTRAINTS_GPA) {
