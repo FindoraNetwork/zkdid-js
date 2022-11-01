@@ -1,6 +1,6 @@
 import { getContentByKey, setContentByKey } from './lib/cache';
 import { address, CacheType, DID } from './types';
-const DIDKit = this === window ? require('@spruceid/didkit-wasm') : require('@spruceid/didkit-wasm-node');
+import DIDKit from './lib/didkit';
 
 /**
  * @param address - Metamask address

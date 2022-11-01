@@ -1,9 +1,12 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.didEqual = exports.isDID = exports.createDID = exports.getDID = exports.hasDID = void 0;
 const cache_1 = require("./lib/cache");
 const types_1 = require("./types");
-const DIDKit = this === window ? require('@spruceid/didkit-wasm') : require('@spruceid/didkit-wasm-node');
+const didkit_1 = __importDefault(require("./lib/didkit"));
 /**
  * @param address - Metamask address
  * @returns `true` if `address` has an DID or `false` otherwise
@@ -37,8 +40,8 @@ exports.getDID = getDID;
 const createDID = (address) => {
     if ((0, exports.hasDID)(address))
         throw Error('DID already exists');
-    const key = DIDKit.generateEd25519Key();
-    const did = { id: DIDKit.keyToDID('key', key) };
+    const key = didkit_1.default.generateEd25519Key();
+    const did = { id: didkit_1.default.keyToDID('key', key) };
     (0, cache_1.setContentByKey)(types_1.CacheType.DID, address, did);
     return did;
 };
