@@ -1,15 +1,15 @@
 import React, { Fragment, useEffect, useRef, useState } from "react";
-import zkDID from '../zkDID';
+import zkDID from '@findora/zkdid-js';
 import * as ethers from 'ethers';
 import MarkdownCpt from "./md";
 import { Base64 } from "js-base64";
 import { randomNumber } from "_src/utils/random";
-import { createZKCredential, getZKCredential, hasZKCredential, ICredential } from "_src/zkDID/credential";
-import { DID } from "_src/zkDID/types";
-import { stringKeccak256 } from "_src/zkDID/lib/tool";
-import { ConstraintINT_RNG, ConstraintSTR_RNG } from "_src/zkDID/constraints";
-import { createCircuit, hasCircuit, ZKCircuit } from "_src/zkDID/circuit";
-import { generateZKProof, verifyZKProof } from "_src/zkDID/zkproof";
+import { createZKCredential, getZKCredential, hasZKCredential, ICredential } from "@findora/zkdid-js/dist/credential";
+import { DID } from "@findora/zkdid-js/dist/types";
+import { stringKeccak256 } from "@findora/zkdid-js/dist/lib/tool";
+import { ConstraintINT_RNG, ConstraintSTR_RNG } from "@findora/zkdid-js/dist/constraints";
+import { createCircuit, hasCircuit, ZKCircuit } from "@findora/zkdid-js/dist/circuit";
+import { generateZKProof, verifyZKProof } from "@findora/zkdid-js/dist/zkproof";
 
 interface KYC_Info {
   dateOfBirth: number;

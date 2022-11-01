@@ -107,6 +107,7 @@
     "@babel/runtime": "^7.14.6",
     "@csstools/normalize.css": "^11.0.1",
     "@ethersproject/providers": "^5.4.0",
+    "@findora/zkdid-js": "git+ssh://git@github.com:FindoraNetwork/zkdid-js.git",
     "@react-firebase/firestore": "^0.5.5",
     "@spruceid/didkit-wasm": "^0.2.1",
     "@types/markdown-it": "^12.2.3",

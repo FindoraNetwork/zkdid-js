@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useRef, useState } from "react";
-import zkDID from '../zkDID';
+import zkDID from '@findora/zkdid-js';
 import * as ethers from 'ethers';
 import MarkdownCpt from "./md";
 
