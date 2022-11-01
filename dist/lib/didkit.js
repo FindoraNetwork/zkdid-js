@@ -1,8 +1,8 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const didkit_wasm_1 = __importDefault(require("@spruceid/didkit-wasm"));
-const DIDKit = didkit_wasm_1.default;
+// import DIDKitNode from '@spruceid/didkit-wasm-node';
+// import DIDKitBrowser from '@spruceid/didkit-wasm';
+const DIDKit = this === window ? require('@spruceid/didkit-wasm') : require('@spruceid/didkit-wasm-node');
+// const DIDKit = global === window ? DIDKitBrowser : DIDKitNode;
+// const DIDKit = DIDKitNode;
 exports.default = DIDKit;

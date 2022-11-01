@@ -37,9 +37,10 @@ exports.getDID = getDID;
  * @returns An instance of new DID (e.g., did:key:z6MksFwai2iBGRQdai5KSFP9FsPvZPnYY2FshK2mJ7nrYwZx)
  * @throws Error if DID already exists
  */
-const createDID = (address) => {
+const createDID = async (address) => {
     if ((0, exports.hasDID)(address))
         throw Error('DID already exists');
+    await didkit_1.default;
     const key = didkit_1.default.generateEd25519Key();
     const did = { id: didkit_1.default.keyToDID('key', key) };
     (0, cache_1.setContentByKey)(types_1.CacheType.DID, address, did);

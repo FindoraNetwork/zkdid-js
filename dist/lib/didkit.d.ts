@@ -1,3 +1,2 @@
-import DIDKitBrowser from '@spruceid/didkit-wasm';
-declare const DIDKit: typeof DIDKitBrowser;
+declare const DIDKit: any;
 export default DIDKit;

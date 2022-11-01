@@ -30,9 +30,9 @@ export const getDID = (address: address): DID => {
  * @returns An instance of new DID (e.g., did:key:z6MksFwai2iBGRQdai5KSFP9FsPvZPnYY2FshK2mJ7nrYwZx)
  * @throws Error if DID already exists
  */
-export const createDID = (address: string): DID => {
+export const createDID = async (address: string): Promise<DID> => {
   if (hasDID(address)) throw Error('DID already exists');
-
+  await DIDKit;
   const key = DIDKit.generateEd25519Key();
   const did = { id: DIDKit.keyToDID('key', key) };
   setContentByKey(CacheType.DID, address, did);
