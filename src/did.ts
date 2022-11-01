@@ -2,6 +2,8 @@ import { getContentByKey, setContentByKey } from './lib/cache';
 import { address, CacheType, DID } from './types';
 import DIDKit from './lib/didkit';
 
+export const waitDIDKitMounted = async () => await DIDKit;
+
 /**
  * @param address - Metamask address
  * @returns `true` if `address` has an DID or `false` otherwise
@@ -30,9 +32,8 @@ export const getDID = (address: address): DID => {
  * @returns An instance of new DID (e.g., did:key:z6MksFwai2iBGRQdai5KSFP9FsPvZPnYY2FshK2mJ7nrYwZx)
  * @throws Error if DID already exists
  */
-export const createDID = async (address: string): Promise<DID> => {
+export const createDID = (address: string): DID => {
   if (hasDID(address)) throw Error('DID already exists');
-  await DIDKit;
   const key = DIDKit.generateEd25519Key();
   const did = { id: DIDKit.keyToDID('key', key) };
   setContentByKey(CacheType.DID, address, did);

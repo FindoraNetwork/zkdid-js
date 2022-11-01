@@ -1,4 +1,5 @@
 import { DID } from './types';
+export declare const waitDIDKitMounted: () => Promise<any>;
 /**
  * @param address - Metamask address
  * @returns `true` if `address` has an DID or `false` otherwise
@@ -17,6 +18,6 @@ export declare const getDID: (address: string) => DID;
  * @returns An instance of new DID (e.g., did:key:z6MksFwai2iBGRQdai5KSFP9FsPvZPnYY2FshK2mJ7nrYwZx)
  * @throws Error if DID already exists
  */
-export declare const createDID: (address: string) => Promise<DID>;
+export declare const createDID: (address: string) => DID;
 export declare const isDID: (did: any) => did is DID;
 export declare const didEqual: (didA: DID, didB: DID) => boolean;

@@ -12,8 +12,8 @@ describe('DID', () => {
       assert.strictEqual(hasDID(account), false);
     });
 
-    it('should return true when the address createDID already', async () => {
-      await createDID(account);
+    it('should return true when the address createDID already', () => {
+      createDID(account);
       assert.strictEqual(hasDID(account), true);
     });
   });
@@ -25,8 +25,8 @@ describe('DID', () => {
       assert.throws(() => getDID(account));
     });
 
-    it('should return did when the address createDID already', async () => {
-      await createDID(account);
+    it('should return did when the address createDID already', () => {
+      createDID(account);
       const did = getDID(account);
       assert.strictEqual(isDID(did), true);
     });
@@ -35,16 +35,13 @@ describe('DID', () => {
   describe('#createDID()', () => {
     const account = getRandomAddress();
 
-    it('should return did when the address first createDID', async () => {
-      const did = await createDID(account);
+    it('should return did when the address first createDID', () => {
+      const did = createDID(account);
       assert.strictEqual(isDID(did), true);
     });
 
-    it('should throw error when the address is createDID already', async () => {
-      const account2 = getRandomAddress();
-      await createDID(account2);
-      const result = await createDID(account2).catch((e) => Promise.resolve(String(e)));
-      assert.strictEqual(result, 'Error: DID already exists');
+    it('should throw error when the address is createDID already', () => {
+      assert.throws(() => createDID(account));
     });
   });
 });

@@ -3,10 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.didEqual = exports.isDID = exports.createDID = exports.getDID = exports.hasDID = void 0;
+exports.didEqual = exports.isDID = exports.createDID = exports.getDID = exports.hasDID = exports.waitDIDKitMounted = void 0;
 const cache_1 = require("./lib/cache");
 const types_1 = require("./types");
 const didkit_1 = __importDefault(require("./lib/didkit"));
+const waitDIDKitMounted = async () => await didkit_1.default;
+exports.waitDIDKitMounted = waitDIDKitMounted;
 /**
  * @param address - Metamask address
  * @returns `true` if `address` has an DID or `false` otherwise
@@ -37,10 +39,9 @@ exports.getDID = getDID;
  * @returns An instance of new DID (e.g., did:key:z6MksFwai2iBGRQdai5KSFP9FsPvZPnYY2FshK2mJ7nrYwZx)
  * @throws Error if DID already exists
  */
-const createDID = async (address) => {
+const createDID = (address) => {
     if ((0, exports.hasDID)(address))
         throw Error('DID already exists');
-    await didkit_1.default;
     const key = didkit_1.default.generateEd25519Key();
     const did = { id: didkit_1.default.keyToDID('key', key) };
     (0, cache_1.setContentByKey)(types_1.CacheType.DID, address, did);
