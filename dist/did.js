@@ -7,7 +7,8 @@ exports.didEqual = exports.isDID = exports.createDID = exports.getDID = exports.
 const cache_1 = require("./lib/cache");
 const types_1 = require("./types");
 const didkit_1 = __importDefault(require("./lib/didkit"));
-const waitDIDKitMounted = async () => await didkit_1.default;
+let DIDKIT = didkit_1.default;
+const waitDIDKitMounted = async () => (DIDKIT = await didkit_1.default);
 exports.waitDIDKitMounted = waitDIDKitMounted;
 /**
  * @param address - Metamask address
@@ -42,8 +43,8 @@ exports.getDID = getDID;
 const createDID = (address) => {
     if ((0, exports.hasDID)(address))
         throw Error('DID already exists');
-    const key = didkit_1.default.generateEd25519Key();
-    const did = { id: didkit_1.default.keyToDID('key', key) };
+    const key = DIDKIT.generateEd25519Key();
+    const did = { id: DIDKIT.keyToDID('key', key) };
     (0, cache_1.setContentByKey)(types_1.CacheType.DID, address, did);
     return did;
 };

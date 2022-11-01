@@ -2,7 +2,8 @@ import { getContentByKey, setContentByKey } from './lib/cache';
 import { address, CacheType, DID } from './types';
 import DIDKit from './lib/didkit';
 
-export const waitDIDKitMounted = async () => await DIDKit;
+let DIDKIT = DIDKit;
+export const waitDIDKitMounted = async () => (DIDKIT = await DIDKit);
 
 /**
  * @param address - Metamask address
@@ -34,8 +35,8 @@ export const getDID = (address: address): DID => {
  */
 export const createDID = (address: string): DID => {
   if (hasDID(address)) throw Error('DID already exists');
-  const key = DIDKit.generateEd25519Key();
-  const did = { id: DIDKit.keyToDID('key', key) };
+  const key = DIDKIT.generateEd25519Key();
+  const did = { id: DIDKIT.keyToDID('key', key) };
   setContentByKey(CacheType.DID, address, did);
   return did;
 };
