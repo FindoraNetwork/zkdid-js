@@ -1531,7 +1531,7 @@
 
 "@findora/zkdid-js@git+ssh://git@github.com:FindoraNetwork/zkdid-js.git":
   version "1.0.0"
-  resolved "git+ssh://git@github.com:FindoraNetwork/zkdid-js.git#a545b2b25b6821d5418a01d13e9c91297918badf"
+  resolved "git+ssh://git@github.com:FindoraNetwork/zkdid-js.git#4eda998ca947e5bd80713eb26ed5d96092367767"
   dependencies:
     "@ethersproject/keccak256" "^5.7.0"
     "@ethersproject/solidity" "^5.7.0"
