@@ -126,6 +126,7 @@ module.exports = {
       http: require.resolve('stream-http'),
       stream: require.resolve('stream-browserify'),
       path: false,
+      util: require.resolve("util/"),
       assert: require.resolve('assert/'),
       fs: false,
       // net: false,
