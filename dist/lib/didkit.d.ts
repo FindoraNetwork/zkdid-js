@@ -1,2 +1,2 @@
-declare const DIDKit: any;
+declare let DIDKit: any;
 export default DIDKit;
