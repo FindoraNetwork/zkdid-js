@@ -18,7 +18,7 @@ class ICredential {
         return this.did;
     }
     getCommitment() {
-        return tool_1.stringKeccak256(this.getEncrypted());
+        return (0, tool_1.stringKeccak256)(this.getEncrypted());
     }
 }
 exports.ICredential = ICredential;
@@ -29,7 +29,7 @@ exports.ICredential = ICredential;
  */
 const hasZKCredential = (did, purpose) => {
     const key = `${did.id}:${purpose}`;
-    const zkCred = cache_1.getContentByKey(types_1.CacheType.ZKCredential, key);
+    const zkCred = (0, cache_1.getContentByKey)(types_1.CacheType.ZKCredential, key);
     if (!zkCred)
         return false;
     return true;
@@ -43,7 +43,7 @@ exports.hasZKCredential = hasZKCredential;
  */
 const getZKCredential = (did, purpose) => {
     const key = `${did.id}:${purpose}`;
-    const credStr = cache_1.getContentByKey(types_1.CacheType.ZKCredential, key);
+    const credStr = (0, cache_1.getContentByKey)(types_1.CacheType.ZKCredential, key);
     if (!credStr)
         throw Error("ZKCredential doesn't exist");
     const zkCred = JSON.parse(credStr);
@@ -73,7 +73,7 @@ const createZKCredential = (cred) => {
         commitment: cred.getCommitment(),
     };
     // serialize and save zkCred
-    cache_1.setContentByKey(types_1.CacheType.ZKCredential, key, JSON.stringify(zkCred));
+    (0, cache_1.setContentByKey)(types_1.CacheType.ZKCredential, key, JSON.stringify(zkCred));
     return zkCred;
 };
 exports.createZKCredential = createZKCredential;
@@ -87,7 +87,7 @@ class GPACredential extends ICredential {
         return 'credential.findora.org';
     }
     static purpose() {
-        return tool_1.stringKeccak256(`${GPACredential.issuer()}.GPA`).slice(-constants_1.default.HashLen);
+        return (0, tool_1.stringKeccak256)(`${GPACredential.issuer()}.GPA`).slice(-constants_1.default.HashLen);
     }
     getGPAScore() {
         return this.GPAScore;
@@ -119,7 +119,7 @@ class CreditScoreCredential extends ICredential {
         return 'credential.findora.org';
     }
     static purpose() {
-        return tool_1.stringKeccak256(`${CreditScoreCredential.issuer()}.CreditScore`).slice(-constants_1.default.HashLen);
+        return (0, tool_1.stringKeccak256)(`${CreditScoreCredential.issuer()}.CreditScore`).slice(-constants_1.default.HashLen);
     }
     getCreditScore() {
         return this.creditScore;
@@ -150,7 +150,7 @@ class AnnualIncomeCredential extends ICredential {
         return 'credential.findora.org';
     }
     static purpose() {
-        return tool_1.stringKeccak256(`${AnnualIncomeCredential.issuer()}.AnnualIncome`).slice(-constants_1.default.HashLen);
+        return (0, tool_1.stringKeccak256)(`${AnnualIncomeCredential.issuer()}.AnnualIncome`).slice(-constants_1.default.HashLen);
     }
     getAnnualIncomeUsd() {
         return this.annualIncomeUsd;

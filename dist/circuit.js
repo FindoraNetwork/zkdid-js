@@ -16,11 +16,11 @@ class ZKCircuit {
         this.constraints.push(constraint);
     }
     toCode() {
-        return tool_1.stringKeccak256(this.toBytes());
+        return (0, tool_1.stringKeccak256)(this.toBytes());
     }
     toBytes() {
         const strThis = this.constraints.map((ctr) => ctr.serialize());
-        const keys = this.constraints.map((ctr) => constraints_1.getKeyOfConstraint(ctr));
+        const keys = this.constraints.map((ctr) => (0, constraints_1.getKeyOfConstraint)(ctr));
         return JSON.stringify([strThis, keys]);
     }
     static fromBytes(bytes) {
@@ -28,7 +28,7 @@ class ZKCircuit {
         const constraints = bytesObj[1].map((key, index) => {
             const argStr = bytesObj[0][index];
             const arg = JSON.parse(argStr);
-            const Class = constraints_1.getConstraintByKey(key);
+            const Class = (0, constraints_1.getConstraintByKey)(key);
             return new Class(...arg);
         });
         return new ZKCircuit(constraints);
@@ -56,7 +56,7 @@ const circuitPath = (purpose, code) => {
  */
 const hasCircuit = (purpose, code) => {
     const path = circuitPath(purpose, code);
-    const circuit = cache_1.getContentByKey(types_1.CacheType.CIRCUIT, path);
+    const circuit = (0, cache_1.getContentByKey)(types_1.CacheType.CIRCUIT, path);
     if (!circuit)
         return false;
     return true;
@@ -70,7 +70,7 @@ exports.hasCircuit = hasCircuit;
  */
 const getCircuit = (purpose, code) => {
     const path = circuitPath(purpose, code);
-    const bytes = cache_1.getContentByKey(types_1.CacheType.CIRCUIT, path);
+    const bytes = (0, cache_1.getContentByKey)(types_1.CacheType.CIRCUIT, path);
     if (!bytes)
         throw Error("Circuit doesn't exist");
     return ZKCircuit.fromBytes(bytes);
@@ -84,10 +84,10 @@ exports.getCircuit = getCircuit;
  */
 const createCircuit = (purpose, circuit) => {
     const key = circuitPath(purpose, circuit.toCode());
-    const bytes = cache_1.getContentByKey(types_1.CacheType.CIRCUIT, key);
+    const bytes = (0, cache_1.getContentByKey)(types_1.CacheType.CIRCUIT, key);
     if (bytes)
         throw Error('Circuit already exists');
-    cache_1.setContentByKey(types_1.CacheType.CIRCUIT, key, circuit.toBytes());
+    (0, cache_1.setContentByKey)(types_1.CacheType.CIRCUIT, key, circuit.toBytes());
 };
 exports.createCircuit = createCircuit;
 // Publish predefined circuit codes
@@ -102,23 +102,23 @@ exports.CODE_INCOME_95K = new ZKCircuit([constraints_1.CONSTRAINT_INCOME_95K]).t
 for (const constraint of constraints_1.CONSTRAINTS_GPA) {
     const purpose = credential_1.GPACredential.purpose();
     const circuit = new ZKCircuit([constraint]);
-    if (!exports.hasCircuit(purpose, circuit.toCode())) {
-        exports.createCircuit(purpose, circuit);
+    if (!(0, exports.hasCircuit)(purpose, circuit.toCode())) {
+        (0, exports.createCircuit)(purpose, circuit);
     }
 }
 // Create predefined circuits for credit score
 for (const constraint of constraints_1.CONSTRAINTS_CREDITS) {
     const purpose = credential_1.CreditScoreCredential.purpose();
     const circuit = new ZKCircuit([constraint]);
-    if (!exports.hasCircuit(purpose, circuit.toCode())) {
-        exports.createCircuit(purpose, circuit);
+    if (!(0, exports.hasCircuit)(purpose, circuit.toCode())) {
+        (0, exports.createCircuit)(purpose, circuit);
     }
 }
 // Create predefined circuits for income
 for (const constraint of constraints_1.CONSTRAINTS_INCOME) {
     const purpose = credential_1.AnnualIncomeCredential.purpose();
     const circuit = new ZKCircuit([constraint]);
-    if (!exports.hasCircuit(purpose, circuit.toCode())) {
-        exports.createCircuit(purpose, circuit);
+    if (!(0, exports.hasCircuit)(purpose, circuit.toCode())) {
+        (0, exports.createCircuit)(purpose, circuit);
     }
 }
