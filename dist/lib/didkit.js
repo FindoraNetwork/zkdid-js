@@ -1,11 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 let DIDKit;
-if (this === window) {
+if (globalThis === window) {
     DIDKit = require('@spruceid/didkit-wasm');
 }
 else {
-    const requireTemp = require;
-    DIDKit = requireTemp('@spruceid/didkit-wasm-node');
+    DIDKit = require('@spruceid/didkit-wasm-node');
 }
 exports.default = DIDKit;

@@ -1,9 +1,8 @@
 let DIDKit: any;
-if (this === window) {
+if (globalThis === window) {
   DIDKit = require('@spruceid/didkit-wasm');
 } else {
-  const requireTemp = require;
-  DIDKit = requireTemp('@spruceid/didkit-wasm-node');
+  DIDKit = require('@spruceid/didkit-wasm-node');
 }
 
 export default DIDKit;
