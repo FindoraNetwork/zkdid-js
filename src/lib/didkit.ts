@@ -1,6 +1,7 @@
 // import DIDKitNode from '@spruceid/didkit-wasm-node';
 // import DIDKitBrowser from '@spruceid/didkit-wasm';
-const DIDKit = this === window ? require('@spruceid/didkit-wasm') : require('@spruceid/didkit-wasm-node');
+const wasmLib = this === window ? '@spruceid/didkit-wasm' : '@spruceid/didkit-wasm-node';
+const DIDKit = require(wasmLib);
 // const DIDKit = global === window ? DIDKitBrowser : DIDKitNode;
 // const DIDKit = DIDKitNode;
 
