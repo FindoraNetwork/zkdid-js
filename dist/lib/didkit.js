@@ -5,7 +5,7 @@ if (this === window) {
     DIDKit = require('@spruceid/didkit-wasm');
 }
 else {
-    let wasmLib = '@spruceid/didkit-wasm-node';
-    DIDKit = require(wasmLib);
+    const requireTemp = require;
+    DIDKit = requireTemp('@spruceid/didkit-wasm-node');
 }
 exports.default = DIDKit;
