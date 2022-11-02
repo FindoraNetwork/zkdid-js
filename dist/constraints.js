@@ -45,7 +45,7 @@ class ConstraintINT_RNG extends IConstraint {
     }
 }
 exports.ConstraintINT_RNG = ConstraintINT_RNG;
-(0, exports.registerConstraint)(ConstraintINT_RNG);
+exports.registerConstraint(ConstraintINT_RNG);
 // The contraint to verify range proof on string
 class ConstraintSTR_RNG extends IConstraint {
     constructor(field, range) {
@@ -63,7 +63,7 @@ class ConstraintSTR_RNG extends IConstraint {
     }
 }
 exports.ConstraintSTR_RNG = ConstraintSTR_RNG;
-(0, exports.registerConstraint)(ConstraintSTR_RNG);
+exports.registerConstraint(ConstraintSTR_RNG);
 // Some predefined constraints
 exports.CONSTRAINT_GPA_30 = new ConstraintINT_RNG('GPAScore', 3.0);
 exports.CONSTRAINT_GPA_35 = new ConstraintINT_RNG('GPAScore', 3.5);

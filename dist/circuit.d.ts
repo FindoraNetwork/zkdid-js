@@ -22,7 +22,7 @@ export declare const hasCircuit: (purpose: string, code: string) => boolean;
  */
 export declare const getCircuit: (purpose: string, code: string) => ZKCircuit;
 /**
- * @remark This method creates a new circuit under `family`
+ * @remark This method creates a new circuit under `purpose`
  * @param purpose - The purpose code
  * @param circuit - The circuit instance
  * @throws Error if circuit already exists

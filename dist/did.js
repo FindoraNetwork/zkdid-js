@@ -15,7 +15,7 @@ exports.waitDIDKitMounted = waitDIDKitMounted;
  * @returns `true` if `address` has an DID or `false` otherwise
  */
 const hasDID = (address) => {
-    const did = (0, cache_1.getContentByKey)(types_1.CacheType.DID, address);
+    const did = cache_1.getContentByKey(types_1.CacheType.DID, address);
     if (!did)
         return false;
     return true;
@@ -27,7 +27,7 @@ exports.hasDID = hasDID;
  * @throws Error if DID doesn't exist
  */
 const getDID = (address) => {
-    const did = (0, cache_1.getContentByKey)(types_1.CacheType.DID, address);
+    const did = cache_1.getContentByKey(types_1.CacheType.DID, address);
     if (!did)
         throw Error("DID doesn't exist");
     return did;
@@ -41,11 +41,11 @@ exports.getDID = getDID;
  * @throws Error if DID already exists
  */
 const createDID = (address) => {
-    if ((0, exports.hasDID)(address))
+    if (exports.hasDID(address))
         throw Error('DID already exists');
     const key = DIDKIT.generateEd25519Key();
     const did = { id: DIDKIT.keyToDID('key', key) };
-    (0, cache_1.setContentByKey)(types_1.CacheType.DID, address, did);
+    cache_1.setContentByKey(types_1.CacheType.DID, address, did);
     return did;
 };
 exports.createDID = createDID;
@@ -64,9 +64,9 @@ const isDID = (did) => {
 };
 exports.isDID = isDID;
 const didEqual = (didA, didB) => {
-    if (!(0, exports.isDID)(didA))
+    if (!exports.isDID(didA))
         return false;
-    if (!(0, exports.isDID)(didB))
+    if (!exports.isDID(didB))
         return false;
     return didA.id === didB.id;
 };

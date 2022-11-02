@@ -4,7 +4,7 @@ exports.stringKeccak256 = exports.isDID = exports.callApi = exports.sleep = void
 const solidity_1 = require("@ethersproject/solidity");
 const sleep = (s = 200) => new Promise((r) => setTimeout(r, s));
 exports.sleep = sleep;
-const callApi = (min = 2000, max = 5000) => (0, exports.sleep)(Math.random() * (max - min) + min);
+const callApi = (min = 2000, max = 5000) => exports.sleep(Math.random() * (max - min) + min);
 exports.callApi = callApi;
 const isDID = (did) => {
     if (!did)
@@ -20,5 +20,5 @@ const isDID = (did) => {
     return true;
 };
 exports.isDID = isDID;
-const stringKeccak256 = (str) => (0, solidity_1.keccak256)(['string'], [str]);
+const stringKeccak256 = (str) => solidity_1.keccak256(['string'], [str]);
 exports.stringKeccak256 = stringKeccak256;
