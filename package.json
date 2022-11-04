@@ -1,28 +1,27 @@
 {
-  "name": "zkdid-js",
-  "version": "1.0.0",
+  "name": "zkdid",
+  "version": "0.0.1",
   "main": "dist/index.js",
+  "description": "A decentralized identity and credential management toolset",
   "repository": "https://github.com/FindoraNetwork/zkdid-js.git",
   "author": "Findora Network",
   "license": "MIT",
   "private": false,
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "postinstall": "patch-package",
+    "ci": "tsc",
     "build": "tsc",
     "test": "cross-env TS_NODE_PROJECT='./test/tsconfig.test.json' mocha --require ts-node/register test/**/*.test.ts"
   },
-  "dependencies": {
-    "@ethersproject/keccak256": "^5.7.0",
-    "@ethersproject/solidity": "^5.7.0",
-    "@spruceid/didkit-wasm": "^0.2.1",
-    "@spruceid/didkit-wasm-node": "^0.2.1",
+  "devDependencies": {
     "@types/assert": "^1.5.6",
     "@types/mocha": "^10.0.0",
     "@types/node": "^18.11.8",
     "assert": "^2.0.0",
     "canvas": "^2.10.1",
     "chai": "^4.3.6",
-    "js-base64": "^3.7.2",
     "jsdom": "^20.0.1",
     "jsdom-global": "^3.0.2",
     "mocha": "^10.0.0",
@@ -31,5 +30,12 @@
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.1.0",
     "typescript": "^4.8.4"
+  },
+  "dependencies": {
+    "js-base64": "^3.7.2",
+    "@ethersproject/keccak256": "^5.7.0",
+    "@ethersproject/solidity": "^5.7.0",
+    "@spruceid/didkit-wasm": "^0.2.1",
+    "@spruceid/didkit-wasm-node": "^0.2.1"
   }
 }
