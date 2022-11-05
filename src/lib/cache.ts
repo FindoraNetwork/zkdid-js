@@ -77,7 +77,7 @@ class MemoryStorage implements Storage {
     this._data[key] = value;
   }
 }
-const storage = globalThis === window ? localStorage : new MemoryStorage();
+const storage = typeof window === 'undefined' ? localStorage : new MemoryStorage();
 
 interface CacheDataType {
   [CacheType.DID]: DID;

@@ -1,5 +1,5 @@
 let DIDKit: any;
-if (globalThis === window) {
+if (typeof window === "undefined") {
   DIDKit = require('@spruceid/didkit-wasm');
 } else {
   DIDKit = require('@spruceid/didkit-wasm-node');
