@@ -52,7 +52,7 @@ class MemoryStorage {
         this._data[key] = value;
     }
 }
-const storage = globalThis === window ? localStorage : new MemoryStorage();
+const storage = typeof window === 'undefined' ? localStorage : new MemoryStorage();
 const getContentByKey = (eCacheType, key) => {
     const res = storage.getItem(`${eCacheType}:${key}`);
     if (res === null)

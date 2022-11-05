@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 let DIDKit;
-if (globalThis === window) {
+if (typeof window === "undefined") {
     DIDKit = require('@spruceid/didkit-wasm');
 }
 else {
