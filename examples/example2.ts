@@ -1,7 +1,7 @@
 import { randomInt } from 'crypto';
 
-import {zkDID} from 'zkDID';
-import {ethers} from 'ethers';
+import { zkDID } from 'zkDID';
+import { ethers } from 'ethers';
 
 import { DID } from 'zkDID/dist/types';
 import { stringKeccak256 } from 'zkDID/dist/lib/tool';
@@ -89,7 +89,7 @@ const users = new Array(UserNumber).fill(null).map((v, i) => {
   // Generates a random user information
   const info = {
     dateOfBirth: randomInt(minDOB, maxDOB),
-    name: `${(i+10).toString(36)}`,
+    name: `${(i + 10).toString(36)}`,
     country: country_list[randomInt(0, country_list.length)],
   };
 
@@ -102,13 +102,13 @@ const users = new Array(UserNumber).fill(null).map((v, i) => {
 });
 
 // KYC credential issuer issues a ZK credential (based on their KYC credential) to each user
-users.forEach(async (user, index) => {
+users.forEach(async (user) => {
   const did = user.kyc.getDID();
   if (false === hasZKCredential(did, purpose)) createZKCredential(user.kyc);
 });
 
 type Result = {
-    [key: number]: boolean;
+  [key: number]: boolean;
 };
 
 const result: Result = {};
@@ -129,5 +129,5 @@ Promise.all(users.map(async (user, index) => {
   // The verification result
   result[index] = res;
 })).then(() => {
-    console.log(result)
+  console.log(result)
 })
